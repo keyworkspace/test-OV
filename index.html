@@ -10,7 +10,6 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 
-  /* ---------- Botones Likert ---------- */
   .likert-btn {
     width: 2.75rem; height: 2.75rem; border-radius: 9999px;
     border: 2px solid #cbd5e1; background: #fff; color: #475569;
@@ -25,7 +24,6 @@
     transform: translateY(-2px);
   }
 
-  /* ---------- Botones de opción múltiple ---------- */
   .opt-btn {
     text-align: left; padding: .7rem .95rem; border-radius: .65rem;
     border: 1.5px solid #e2e8f0; background: #fff; font-size: .875rem;
@@ -38,7 +36,6 @@
     font-weight: 700; box-shadow: 0 0 0 3px rgba(99, 102, 241, .18);
   }
 
-  /* ---------- Tarjetas con error de validación ---------- */
   .missing-card {
     border-color: #fca5a5 !important;
     box-shadow: 0 0 0 3px rgba(248, 113, 113, .18) !important;
@@ -50,7 +47,6 @@
     75% { transform: translateX(5px); }
   }
 
-  /* ---------- Animación de entrada ---------- */
   .fade-in { animation: fadeIn .35s ease both; }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -59,7 +55,6 @@
 
   textarea:focus, input:focus { outline: none; }
 
-  /* ---------- Impresión ---------- */
   @media print {
     .no-print { display: none !important; }
     body { background: #fff !important; }
@@ -77,7 +72,6 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col">
 
-<!-- ============ ENCABEZADO ============ -->
 <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 text-white shadow-lg no-print">
   <div class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
     <div class="flex items-center gap-3 sm:gap-4">
@@ -92,10 +86,8 @@
   </div>
 </header>
 
-<!-- ============ CONTENIDO PRINCIPAL ============ -->
 <main class="flex-1 w-full max-w-5xl mx-auto px-4 py-6 sm:py-8">
 
-  <!-- Barra de progreso -->
   <div class="mb-6 no-print">
     <div class="flex justify-between items-center mb-2">
       <span class="text-xs font-bold text-slate-500 uppercase tracking-wide" id="stepLabel">Paso 1 de 5</span>
@@ -115,13 +107,10 @@
     </div>
   </div>
 
-  <!-- Caja de alertas -->
   <div id="alertBox" class="hidden mb-5"></div>
 
-  <!-- Contenedor dinámico de módulos -->
   <div id="content" class="fade-in"></div>
 
-  <!-- Navegación -->
   <div class="flex justify-between items-center gap-3 mt-8 no-print">
     <button id="btnPrev"
       class="px-5 py-3 rounded-xl font-semibold text-sm bg-white text-slate-600 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-indigo-600 transition-all">
@@ -149,95 +138,113 @@ const AREAS = {
     name: 'Administrativas', short: 'Administrativas',
     full: 'Ciencias Administrativas, Contables y Económicas',
     color: '#2563eb', bg: '#dbeafe',
-    desc: 'Perfil orientado al orden, la organización, la gestión de recursos, el cumplimiento de normas y el manejo estructurado de la información.',
-    careers: ['Administración de Empresas', 'Contaduría Pública', 'Finanzas', 'Recursos Humanos', 'Comercio Internacional', 'Logística y Cadena de Suministro', 'Economía', 'Auditoría', 'Administración Pública', 'Mercadotecnia']
+    desc: 'Perfil orientado al orden, la organización, la gestión de recursos, el cumplimiento de normas y el manejo estructurado de la información. A menudo se asocia con personalidades de tipo Convencional (Holland), que valoran la estabilidad, la precisión y el trabajo sistemático.',
+    careers: ['Administración de Empresas', 'Contaduría Pública', 'Finanzas', 'Recursos Humanos', 'Comercio Internacional', 'Logística y Cadena de Suministro', 'Economía', 'Auditoría', 'Administración Pública', 'Mercadotecnia', 'Negocios Internacionales', 'Estadística']
   },
   H: {
     name: 'Humanísticas', short: 'Humanísticas',
     full: 'Ciencias Humanísticas, Sociales y Educación',
     color: '#db2777', bg: '#fce7f3',
-    desc: 'Perfil orientado al servicio, la comunicación, la enseñanza, la comprensión del comportamiento humano y la transformación social.',
-    careers: ['Psicología', 'Trabajo Social', 'Pedagogía / Docencia', 'Comunicación Social', 'Sociología', 'Derecho', 'Filosofía', 'Educación Especial', 'Orientación Familiar', 'Gestión Cultural']
+    desc: 'Perfil orientado al servicio, la comunicación, la enseñanza, la comprensión del comportamiento humano y la transformación social. Se relaciona con personalidades de tipo Social (Holland) y con fuertes valores altruistas y de impacto comunitario.',
+    careers: ['Psicología', 'Trabajo Social', 'Pedagogía / Docencia', 'Comunicación Social', 'Sociología', 'Derecho', 'Filosofía', 'Educación Especial', 'Orientación Familiar', 'Gestión Cultural', 'Antropología', 'Historia', 'Literatura']
   },
   A: {
     name: 'Artísticas', short: 'Artísticas',
     full: 'Artes, Diseño y Comunicación Creativa',
     color: '#9333ea', bg: '#f3e8ff',
-    desc: 'Perfil orientado a la expresión, la creatividad, la estética, la innovación y la producción de ideas originales sin estructuras rígidas.',
-    careers: ['Diseño Gráfico', 'Arquitectura', 'Artes Plásticas', 'Música', 'Cine y Producción Audiovisual', 'Diseño de Modas', 'Publicidad Creativa', 'Teatro y Artes Escénicas', 'Diseño de Interiores', 'Animación Digital']
+    desc: 'Perfil orientado a la expresión, la creatividad, la estética, la innovación y la producción de ideas originales sin estructuras rígidas. Se vincula con personalidades de tipo Artístico (Holland), que buscan la autoexpresión y valoran la libertad.',
+    careers: ['Diseño Gráfico', 'Arquitectura', 'Artes Plásticas', 'Música', 'Cine y Producción Audiovisual', 'Diseño de Modas', 'Publicidad Creativa', 'Teatro y Artes Escénicas', 'Diseño de Interiores', 'Animación Digital', 'Fotografía', 'Escultura']
   },
   S: {
     name: 'Salud', short: 'Salud',
     full: 'Ciencias de la Salud y Asistencia Social',
     color: '#059669', bg: '#d1fae5',
-    desc: 'Perfil orientado al cuidado, la prevención, el diagnóstico, el bienestar físico-emocional y el servicio directo a las personas.',
-    careers: ['Medicina', 'Enfermería', 'Odontología', 'Fisioterapia', 'Nutrición y Dietética', 'Psicología Clínica', 'Farmacia', 'Medicina Veterinaria', 'Obstetricia', 'Terapia Ocupacional', 'Tecnología Médica']
+    desc: 'Perfil orientado al cuidado, la prevención, el diagnóstico, el bienestar físico-emocional y el servicio directo a las personas. Se asocia con personalidades de tipo Social (Holland) y con una fuerte vocación de servicio y empatía.',
+    careers: ['Medicina', 'Enfermería', 'Odontología', 'Fisioterapia', 'Nutrición y Dietética', 'Psicología Clínica', 'Farmacia', 'Medicina Veterinaria', 'Obstetricia', 'Terapia Ocupacional', 'Tecnología Médica', 'Fonoaudiología']
   },
   I: {
     name: 'Ingeniería', short: 'Ingeniería',
     full: 'Ingeniería, Tecnología y Computación',
     color: '#0891b2', bg: '#cffafe',
-    desc: 'Perfil orientado al diseño, construcción, mantenimiento y optimización de sistemas tecnológicos, mecánicos y digitales.',
-    careers: ['Ingeniería de Sistemas', 'Ingeniería Civil', 'Ingeniería Mecánica', 'Ingeniería Electrónica', 'Ciencias de la Computación', 'Desarrollo de Software', 'Ingeniería Industrial', 'Mecatrónica y Robótica', 'Ingeniería Eléctrica', 'Ciberseguridad']
+    desc: 'Perfil orientado al diseño, construcción, mantenimiento y optimización de sistemas tecnológicos, mecánicos y digitales. Se relaciona con personalidades de tipo Realista e Investigador (Holland), que disfrutan resolver problemas prácticos y técnicos.',
+    careers: ['Ingeniería de Sistemas', 'Ingeniería Civil', 'Ingeniería Mecánica', 'Ingeniería Electrónica', 'Ciencias de la Computación', 'Desarrollo de Software', 'Ingeniería Industrial', 'Mecatrónica y Robótica', 'Ingeniería Eléctrica', 'Ciberseguridad', 'Ingeniería Química', 'Ingeniería Agronómica']
   },
   D: {
     name: 'Defensa', short: 'Defensa',
     full: 'Defensa, Seguridad, Liderazgo y Jurídica',
     color: '#ea580c', bg: '#ffedd5',
-    desc: 'Perfil orientado al liderazgo, la toma de decisiones bajo presión, la disciplina, la protección de las personas y la gestión de riesgos.',
-    careers: ['Derecho y Ciencias Jurídicas', 'Criminalística', 'Ciencias Policiales', 'Ciencias Militares', 'Relaciones Internacionales', 'Gestión de Riesgos y Desastres', 'Seguridad Industrial', 'Administración Pública', 'Gestión de Equipos', 'Comercio Exterior']
+    desc: 'Perfil orientado al liderazgo, la toma de decisiones bajo presión, la disciplina, la protección de las personas y la gestión de riesgos. Se vincula con personalidades de tipo Emprendedor (Holland) y con valores de justicia, orden y servicio público.',
+    careers: ['Derecho y Ciencias Jurídicas', 'Criminalística', 'Ciencias Policiales', 'Ciencias Militares', 'Relaciones Internacionales', 'Gestión de Riesgos y Desastres', 'Seguridad Industrial', 'Administración Pública', 'Gestión de Equipos', 'Comercio Exterior', 'Ciencias Políticas', 'Sociología Jurídica']
   },
   E: {
     name: 'Exactas', short: 'Exactas',
     full: 'Ciencias Exactas, Naturales y Agrarias',
     color: '#65a30d', bg: '#ecfccb',
-    desc: 'Perfil orientado a la investigación, la experimentación, el análisis riguroso de datos y la comprensión de los fenómenos naturales.',
-    careers: ['Matemáticas', 'Física', 'Química', 'Biología', 'Estadística', 'Ingeniería Agronómica', 'Geología', 'Ciencias Ambientales', 'Bioquímica', 'Biotecnología', 'Zootecnia']
+    desc: 'Perfil orientado a la investigación, la experimentación, el análisis riguroso de datos y la comprensión de los fenómenos naturales. Se asocia con personalidades de tipo Investigador (Holland) y con una fuerte curiosidad científica y pensamiento analítico.',
+    careers: ['Matemáticas', 'Física', 'Química', 'Biología', 'Estadística', 'Ingeniería Agronómica', 'Geología', 'Ciencias Ambientales', 'Bioquímica', 'Biotecnología', 'Zootecnia', 'Astronomía', 'Oceanografía']
   }
 };
 
 const AREA_ORDER = ['C', 'H', 'A', 'S', 'I', 'D', 'E'];
 
-/* ---------- MÓDULO 1: CHASIDE + RIASEC ---------- */
+/* ---------- MÓDULO 1: CHASIDE + RIASEC (28 ítems, 4 por área) ---------- */
 const M1 = [
   { id: 1,  area: 'C', text: 'Me gusta organizar archivos, clasificar documentos o llevar un control ordenado de datos.' },
   { id: 2,  area: 'C', text: 'Prefiero seguir reglas claras y procedimientos estructurados en mi trabajo.' },
-  { id: 3,  area: 'H', text: 'Me apasiona ayudar a los demás a resolver sus problemas personales o emocionales.' },
-  { id: 4,  area: 'H', text: 'Disfruto enseñar, capacitar o explicar temas complejos a otras personas.' },
-  { id: 5,  area: 'A', text: 'Me atrae expresar mis ideas a través del dibujo, la música, la escritura o el diseño.' },
-  { id: 6,  area: 'A', text: 'Valoro la creatividad y prefiero tareas donde no haya respuestas únicas ni rígidas.' },
-  { id: 7,  area: 'S', text: 'Me interesa entender cómo funciona el cuerpo humano, la biología o la medicina.' },
-  { id: 8,  area: 'S', text: 'Me siento cómodo/a en entornos asistenciales, cuidando la salud física o el bienestar de otros.' },
-  { id: 9,  area: 'I', text: 'Me gusta armar, desarmar, reparar objetos mecánicos o entender el funcionamiento de máquinas.' },
-  { id: 10, area: 'I', text: 'Me atrae programar, trabajar con tecnología o resolver problemas lógicos informáticos.' },
-  { id: 11, area: 'D', text: 'Me motiva asumir roles de liderazgo, tomar decisiones bajo presión y dirigir equipos.' },
-  { id: 12, area: 'D', text: 'Me interesan la estrategia, la disciplina, la protección civil o el ámbito jurídico/militar.' },
-  { id: 13, area: 'E', text: 'Disfruto investigar, hacer experimentos científicos o analizar fenómenos naturales.' },
-  { id: 14, area: 'E', text: 'Me gusta trabajar con números, fórmulas matemáticas o estadísticas para comprobar hipótesis.' }
+  { id: 3,  area: 'C', text: 'Disfruto llevar la contabilidad de una empresa o gestionar presupuestos.' },
+  { id: 4,  area: 'C', text: 'Me siento cómodo/a trabajando en una oficina con horarios y tareas definidas.' },
+  { id: 5,  area: 'H', text: 'Me apasiona ayudar a los demás a resolver sus problemas personales o emocionales.' },
+  { id: 6,  area: 'H', text: 'Disfruto enseñar, capacitar o explicar temas complejos a otras personas.' },
+  { id: 7,  area: 'H', text: 'Me interesa comprender las causas de los problemas sociales y cómo solucionarlos.' },
+  { id: 8,  area: 'H', text: 'Me gusta escuchar y aconsejar a amigos o familiares en momentos difíciles.' },
+  { id: 9,  area: 'A', text: 'Me atrae expresar mis ideas a través del dibujo, la música, la escritura o el diseño.' },
+  { id: 10, area: 'A', text: 'Valoro la creatividad y prefiero tareas donde no haya respuestas únicas ni rígidas.' },
+  { id: 11, area: 'A', text: 'Disfruto visitar museos, exposiciones de arte o asistir a conciertos.' },
+  { id: 12, area: 'A', text: 'Me gusta imaginar y crear cosas nuevas, aunque no tengan una utilidad práctica inmediata.' },
+  { id: 13, area: 'S', text: 'Me interesa entender cómo funciona el cuerpo humano, la biología o la medicina.' },
+  { id: 14, area: 'S', text: 'Me siento cómodo/a en entornos asistenciales, cuidando la salud física o el bienestar de otros.' },
+  { id: 15, area: 'S', text: 'Me gustaría realizar primeros auxilios o ayudar en campañas de prevención de la salud.' },
+  { id: 16, area: 'S', text: 'Me interesa investigar sobre enfermedades y cómo diagnosticarlas.' },
+  { id: 17, area: 'I', text: 'Me gusta armar, desarmar, reparar objetos mecánicos o entender el funcionamiento de máquinas.' },
+  { id: 18, area: 'I', text: 'Me atrae programar, trabajar con tecnología o resolver problemas lógicos informáticos.' },
+  { id: 19, area: 'I', text: 'Disfruto diseñar o construir objetos, estructuras o sistemas.' },
+  { id: 20, area: 'I', text: 'Me interesa aprender sobre electricidad, electrónica o mecánica automotriz.' },
+  { id: 21, area: 'D', text: 'Me motiva asumir roles de liderazgo, tomar decisiones bajo presión y dirigir equipos.' },
+  { id: 22, area: 'D', text: 'Me interesan la estrategia, la disciplina, la protección civil o el ámbito jurídico/militar.' },
+  { id: 23, area: 'D', text: 'Defendería con argumentos mis ideas y las de otros ante una injusticia.' },
+  { id: 24, area: 'D', text: 'Me atrae la idea de trabajar en seguridad, defensa o resolución de conflictos.' },
+  { id: 25, area: 'E', text: 'Disfruto investigar, hacer experimentos científicos o analizar fenómenos naturales.' },
+  { id: 26, area: 'E', text: 'Me gusta trabajar con números, fórmulas matemáticas o estadísticas para comprobar hipótesis.' },
+  { id: 27, area: 'E', text: 'Me interesa observar y clasificar plantas, animales o minerales.' },
+  { id: 28, area: 'E', text: 'Me gustaría participar en proyectos de investigación científica o ambiental.' }
 ];
 
-/* ---------- MÓDULO 2: AUTOEFICACIA / DAT ---------- */
+/* ---------- MÓDULO 2: AUTOEFICACIA / DAT (10 ítems) ---------- */
 const M2 = [
   { id: 1, title: 'Razonamiento Lógico-Matemático', desc: 'Facilidad para números, cálculo y resolución de problemas abstractos.', icon: '🔢' },
   { id: 2, title: 'Aptitud Verbal y Comprensión Lectora', desc: 'Facilidad para redactar, debatir y argumentar ideas.', icon: '📝' },
   { id: 3, title: 'Habilidad Espacial y Visual', desc: 'Capacidad para imaginar objetos en 3D, mapas o diseños geométricos.', icon: '📐' },
   { id: 4, title: 'Aptitud Mecánica y Técnica', desc: 'Destreza manual para manipular herramientas o sistemas físicos.', icon: '🔧' },
   { id: 5, title: 'Habilidad Interpersonal y Empatía', desc: 'Facilidad para negociar, escuchar y coordinar personas.', icon: '🤝' },
-  { id: 6, title: 'Capacidad de Análisis Científico', desc: 'Destreza para observar, investigar y sistematizar datos.', icon: '🔬' }
+  { id: 6, title: 'Capacidad de Análisis Científico', desc: 'Destreza para observar, investigar y sistematizar datos.', icon: '🔬' },
+  { id: 7, title: 'Creatividad e Innovación', desc: 'Facilidad para generar ideas originales y pensar fuera de lo convencional.', icon: '💡' },
+  { id: 8, title: 'Organización y Planificación', desc: 'Habilidad para estructurar tareas, gestionar tiempo y recursos.', icon: '📅' },
+  { id: 9, title: 'Liderazgo y Toma de Decisiones', desc: 'Capacidad para guiar grupos y decidir con seguridad.', icon: '🎯' },
+  { id: 10, title: 'Comunicación Oral y Escrita', desc: 'Habilidad para expresar ideas con claridad y persuasión.', icon: '🗣️' }
 ];
 
 /* Mapeo Aptitud (índice 0-based del Módulo 2) → Áreas CHASIDE */
 const APT_MAP = {
-  C: [0],        // Lógico-Matemático
-  H: [1, 4],     // Verbal + Interpersonal
-  A: [1, 2],     // Verbal + Espacial
-  S: [4, 5],     // Interpersonal + Científico
-  I: [2, 3],     // Espacial + Mecánica
-  D: [3, 4],     // Mecánica + Interpersonal
-  E: [0, 5]      // Lógico-Matemático + Científico
+  C: [0, 7],        // Lógico-Matemático + Organización
+  H: [1, 4, 9],     // Verbal + Interpersonal + Comunicación
+  A: [1, 6, 9],     // Verbal + Creatividad + Comunicación
+  S: [4, 5, 9],     // Interpersonal + Científico + Comunicación
+  I: [2, 3, 0],     // Espacial + Mecánica + Lógico-Matemático
+  D: [3, 4, 8],     // Mecánica + Interpersonal + Liderazgo
+  E: [0, 5, 6]      // Lógico-Matemático + Científico + Creatividad
 };
 
-/* ---------- MÓDULO 3: VALORES, CONTEXTO Y OBSTÁCULOS ---------- */
+/* ---------- MÓDULO 3: VALORES, CONTEXTO Y OBSTÁCULOS (6 ítems) ---------- */
 const M3 = [
   {
     id: 'valor', icon: '💎',
@@ -258,6 +265,16 @@ const M3 = [
     id: 'modalidad', icon: '🎓',
     title: '¿Qué modalidad de formación se adapta mejor a ti?',
     options: ['Universidad presencial tradicional', 'Educación técnica / tecnológica', 'Educación virtual / autodidacta', 'Formación dual (estudiar y trabajar)']
+  },
+  {
+    id: 'tiempo', icon: '⏳',
+    title: '¿Cuánto tiempo estás dispuesto/a a invertir en tu formación?',
+    options: ['Menos de 2 años', 'Entre 2 y 4 años', 'Entre 4 y 6 años', 'Más de 6 años (posgrados)']
+  },
+  {
+    id: 'movilidad', icon: '✈️',
+    title: '¿Qué tan dispuesto/a estás a mudarte o viajar por trabajo?',
+    options: ['Nada dispuesto/a', 'Poco dispuesto/a', 'Moderadamente dispuesto/a', 'Muy dispuesto/a']
   }
 ];
 
@@ -273,9 +290,9 @@ const OBSTACLE_TIPS = {
    2. ESTADO DE LA APLICACIÓN
    ========================================================= */
 const state = {
-  m1: {},        // id -> valor 1..5
-  m2: {},        // id -> valor 1..5
-  m3: {},        // id -> índice de opción
+  m1: {},
+  m2: {},
+  m3: {},
   m4: { f1: '', f2: '' }
 };
 
@@ -313,7 +330,6 @@ function clearAlert() {
    4. RENDERIZADO DE MÓDULOS
    ========================================================= */
 
-/* ---------- MÓDULO 1 ---------- */
 function renderModule1() {
   const legend = `
     <div class="flex flex-wrap justify-center gap-2 text-[10px] sm:text-xs text-slate-500 font-medium">
@@ -353,7 +369,7 @@ function renderModule1() {
         <h2 class="text-base sm:text-lg font-extrabold text-indigo-900">Módulo 1 · Intereses y Personalidad</h2>
         <p class="text-[13px] sm:text-sm text-indigo-700 mt-1">
           Modelo <strong>CHASIDE</strong> combinado con los tipos de personalidad de <strong>Holland (RIASEC)</strong>.
-          Indica tu grado de acuerdo con cada una de las 14 afirmaciones. Responde con sinceridad: no hay respuestas correctas ni incorrectas.
+          Indica tu grado de acuerdo con cada una de las 28 afirmaciones. Responde con sinceridad: no hay respuestas correctas ni incorrectas.
         </p>
       </div>
       ${legend}
@@ -361,7 +377,6 @@ function renderModule1() {
     </div>`;
 }
 
-/* ---------- MÓDULO 2 ---------- */
 function renderModule2() {
   const legend = `
     <div class="flex flex-wrap justify-center gap-2 text-[10px] sm:text-xs text-slate-500 font-medium">
@@ -407,7 +422,6 @@ function renderModule2() {
     </div>`;
 }
 
-/* ---------- MÓDULO 3 ---------- */
 function renderModule3() {
   const blocks = M3.map(q => `
     <div id="card-m3-${q.id}" class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
@@ -436,7 +450,6 @@ function renderModule3() {
     </div>`;
 }
 
-/* ---------- MÓDULO 4 ---------- */
 function renderModule4() {
   return `
     <div class="space-y-4">
@@ -478,11 +491,16 @@ function renderModule4() {
    5. CÁLCULO DE RESULTADOS
    ========================================================= */
 function computeResults() {
-  /* --- Intereses (Módulo 1): suma directa, rango 2 a 10 --- */
+  /* --- Intereses (Módulo 1): suma directa, rango 4 a 20 --- */
   const interest = {};
   AREA_ORDER.forEach(a => interest[a] = 0);
   M1.forEach(q => {
     interest[q.area] += Number(state.m1[q.id] || 0);
+  });
+  // Normalizar a escala 0-10
+  const interestNorm = {};
+  AREA_ORDER.forEach(a => {
+    interestNorm[a] = ((interest[a] - 4) / 16) * 10; // (valor - min) / (max - min) * 10
   });
 
   /* --- Aptitudes (Módulo 2) normalizadas a escala 0-10 --- */
@@ -491,27 +509,27 @@ function computeResults() {
   AREA_ORDER.forEach(a => {
     const idxs = APT_MAP[a];
     const avg = idxs.reduce((s, i) => s + aptRaw[i], 0) / idxs.length; // 1..5
-    aptitude[a] = avg * 2; // 0..10
+    aptitude[a] = ((avg - 1) / 4) * 10; // 0..10
   });
 
   /* --- Área predominante --- */
   let predominant = AREA_ORDER[0];
   AREA_ORDER.forEach(a => {
     if (
-      interest[a] > interest[predominant] ||
-      (interest[a] === interest[predominant] && aptitude[a] > aptitude[predominant])
+      interestNorm[a] > interestNorm[predominant] ||
+      (interestNorm[a] === interestNorm[predominant] && aptitude[a] > aptitude[predominant])
     ) {
       predominant = a;
     }
   });
 
   /* --- Área secundaria --- */
-  const sorted = [...AREA_ORDER].sort((x, y) => interest[y] - interest[x] || aptitude[y] - aptitude[x]);
+  const sorted = [...AREA_ORDER].sort((x, y) => interestNorm[y] - interestNorm[x] || aptitude[y] - aptitude[x]);
   const secondary = sorted.find(a => a !== predominant);
 
   /* --- Coherencia global (Interés vs Aptitud) --- */
   let sumDiff = 0;
-  AREA_ORDER.forEach(a => { sumDiff += Math.abs(interest[a] - aptitude[a]); });
+  AREA_ORDER.forEach(a => { sumDiff += Math.abs(interestNorm[a] - aptitude[a]); });
   const meanDiff = sumDiff / AREA_ORDER.length;
   const coherence = Math.max(0, Math.min(100, Math.round(100 - (meanDiff / 10) * 100)));
 
@@ -530,7 +548,30 @@ function computeResults() {
     diagColor = '#be123c'; diagBg = '#fff1f2';
   }
 
-  return { interest, aptitude, predominant, secondary, coherence, meanDiff, diagnosis, diagDesc, diagColor, diagBg };
+  /* --- Coherencia por área --- */
+  const coherenceByArea = {};
+  AREA_ORDER.forEach(a => {
+    const diff = Math.abs(interestNorm[a] - aptitude[a]);
+    let label, color;
+    if (diff <= 1.5) { label = 'Coherente'; color = '#047857'; }
+    else if (diff <= 3.5) { label = 'Moderada'; color = '#b45309'; }
+    else { label = 'Brecha'; color = '#be123c'; }
+    coherenceByArea[a] = { diff, label, color, interest: interestNorm[a], aptitude: aptitude[a] };
+  });
+
+  return {
+    interest: interestNorm,
+    aptitude,
+    predominant,
+    secondary,
+    coherence,
+    meanDiff,
+    diagnosis,
+    diagDesc,
+    diagColor,
+    diagBg,
+    coherenceByArea
+  };
 }
 
 /* =========================================================
@@ -615,14 +656,9 @@ function renderResults() {
   /* --- Filas de comparación por área --- */
   const comparisonRows = AREA_ORDER.map(a => {
     const A = AREAS[a];
-    const int = r.interest[a];
-    const apt = r.aptitude[a];
-    const diff = Math.abs(int - apt);
-
-    let badge, badgeCls;
-    if (diff <= 1.5)      { badge = 'Coherente';   badgeCls = 'bg-emerald-100 text-emerald-700'; }
-    else if (diff <= 3)   { badge = 'Moderada';    badgeCls = 'bg-amber-100 text-amber-700'; }
-    else                  { badge = 'Brecha';      badgeCls = 'bg-rose-100 text-rose-700'; }
+    const c = r.coherenceByArea[a];
+    const badgeCls = c.label === 'Coherente' ? 'bg-emerald-100 text-emerald-700' :
+                     c.label === 'Moderada' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700';
 
     return `
       <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm print-break">
@@ -631,27 +667,27 @@ function renderResults() {
             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${A.color}"></span>
             <span class="font-bold text-[13px] text-slate-800 truncate">${A.name}</span>
           </div>
-          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${badgeCls} shrink-0">${badge}</span>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${badgeCls} shrink-0">${c.label}</span>
         </div>
         <div class="space-y-2">
           <div>
             <div class="flex justify-between text-[11px] text-slate-500 mb-1">
               <span class="font-semibold">Interés (M1)</span>
-              <span class="font-bold text-indigo-600">${int.toFixed(1)}/10</span>
+              <span class="font-bold text-indigo-600">${c.interest.toFixed(1)}/10</span>
             </div>
             <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
-                   style="width:${(int / 10) * 100}%"></div>
+                   style="width:${(c.interest / 10) * 100}%"></div>
             </div>
           </div>
           <div>
             <div class="flex justify-between text-[11px] text-slate-500 mb-1">
               <span class="font-semibold">Aptitud (M2)</span>
-              <span class="font-bold text-emerald-600">${apt.toFixed(1)}/10</span>
+              <span class="font-bold text-emerald-600">${c.aptitude.toFixed(1)}/10</span>
             </div>
             <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
-                   style="width:${(apt / 10) * 100}%"></div>
+                   style="width:${(c.aptitude / 10) * 100}%"></div>
             </div>
           </div>
         </div>
@@ -669,6 +705,8 @@ function renderResults() {
   const obstaculoTxt = getM3('obstaculo');
   const entornoTxt = getM3('entorno');
   const modalidadTxt = getM3('modalidad');
+  const tiempoTxt = getM3('tiempo');
+  const movilidadTxt = getM3('movilidad');
   const tip = OBSTACLE_TIPS[obstaculoTxt] || '';
 
   const infoItem = (label, value, icon) => `
@@ -688,6 +726,8 @@ function renderResults() {
         ${infoItem('Obstáculo detectado', obstaculoTxt, '🚧')}
         ${infoItem('Entorno laboral preferido', entornoTxt, '🏢')}
         ${infoItem('Modalidad de formación', modalidadTxt, '🎓')}
+        ${infoItem('Tiempo de formación', tiempoTxt, '⏳')}
+        ${infoItem('Movilidad geográfica', movilidadTxt, '✈️')}
       </div>
 
       ${tip ? `
@@ -902,7 +942,7 @@ function validateStep(step) {
     const missing = M1.filter(q => !state.m1[q.id]).map(q => q.id);
     if (missing.length) {
       markMissing('card-m1', missing);
-      showAlert(`Faltan ${missing.length} afirmación(es) por responder en el Módulo 1. Debes responder las 14 para continuar.`);
+      showAlert(`Faltan ${missing.length} afirmación(es) por responder en el Módulo 1. Debes responder las 28 para continuar.`);
       return false;
     }
   }
@@ -910,7 +950,7 @@ function validateStep(step) {
     const missing = M2.filter(q => !state.m2[q.id]).map(q => q.id);
     if (missing.length) {
       markMissing('card-m2', missing);
-      showAlert(`Faltan ${missing.length} competencia(s) por autoevaluar en el Módulo 2. Debes responder las 6 para continuar.`);
+      showAlert(`Faltan ${missing.length} competencia(s) por autoevaluar en el Módulo 2. Debes responder las 10 para continuar.`);
       return false;
     }
   }
@@ -994,12 +1034,11 @@ function renderStep() {
     content.innerHTML = renderModule4();
   } else {
     content.innerHTML = renderResults();
-    // Crear gráfico después de insertar el canvas en el DOM
     requestAnimationFrame(() => createRadarChart());
   }
 
   content.classList.remove('fade-in');
-  void content.offsetWidth; // reinicia la animación
+  void content.offsetWidth;
   content.classList.add('fade-in');
 
   updateProgress();
@@ -1025,9 +1064,7 @@ document.getElementById('btnPrev').addEventListener('click', () => {
   }
 });
 
-/* --- Delegación de eventos para botones generados dinámicamente --- */
 document.getElementById('content').addEventListener('click', (e) => {
-  // Likert Módulo 1
   const b1 = e.target.closest('[data-m1]');
   if (b1) {
     const qid = Number(b1.getAttribute('data-m1'));
@@ -1043,7 +1080,6 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
-  // Likert Módulo 2
   const b2 = e.target.closest('[data-m2]');
   if (b2) {
     const qid = Number(b2.getAttribute('data-m2'));
@@ -1059,7 +1095,6 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
-  // Opciones Módulo 3
   const b3 = e.target.closest('[data-m3]');
   if (b3) {
     const qid = b3.getAttribute('data-m3');
@@ -1074,7 +1109,6 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
-  // Reiniciar
   const bRestart = e.target.closest('#btnRestart');
   if (bRestart) {
     if (confirm('¿Deseas borrar todas tus respuestas y comenzar una nueva evaluación?')) {
@@ -1084,7 +1118,6 @@ document.getElementById('content').addEventListener('click', (e) => {
   }
 });
 
-/* --- Entradas de texto del Módulo 4 --- */
 document.getElementById('content').addEventListener('input', (e) => {
   const t = e.target.closest('[data-m4]');
   if (t) {
@@ -1095,7 +1128,6 @@ document.getElementById('content').addEventListener('input', (e) => {
   }
 });
 
-/* --- Reinicio total --- */
 function resetAll() {
   state.m1 = {};
   state.m2 = {};
