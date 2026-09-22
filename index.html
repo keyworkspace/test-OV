@@ -53,39 +53,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  textarea:focus, input:focus { outline: none; }
+  textarea:focus, input:focus, select:focus { outline: none; }
 
-  .tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: help;
-    border-bottom: 1px dotted #94a3b8;
-  }
-  .tooltip .tooltip-text {
-    visibility: hidden;
-    width: 260px;
-    background-color: #1e293b;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 12px;
-    position: absolute;
-    z-index: 10;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -130px;
-    font-size: 11px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-weight: 400;
-    line-height: 1.4;
-  }
-  .tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  /* Indicador de pregunta neutra */
   .item-number {
     display: inline-flex;
     align-items: center;
@@ -97,6 +66,25 @@
     font-weight: 800;
     font-size: .8rem;
     flex-shrink: 0;
+  }
+
+  .input-field {
+    width: 100%;
+    border: 1.5px solid #cbd5e1;
+    border-radius: .5rem;
+    padding: .6rem .8rem;
+    font-size: .875rem;
+    color: #334155;
+    transition: all .15s ease;
+    background: #fff;
+  }
+  .input-field:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, .15);
+  }
+  .input-field.missing {
+    border-color: #fca5a5;
+    background: #fef2f2;
   }
 
   @media print {
@@ -135,7 +123,7 @@
   <div class="mb-6 no-print">
     <div class="flex justify-between items-center mb-2">
       <span class="text-xs font-bold text-slate-500 uppercase tracking-wide" id="stepLabel">Paso 1 de 5</span>
-      <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide" id="stepName">Intereses</span>
+      <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide" id="stepName">Identificación e Intereses</span>
     </div>
     <div class="h-2.5 bg-slate-200 rounded-full overflow-hidden shadow-inner">
       <div id="progressBar"
@@ -143,11 +131,11 @@
            style="width:20%"></div>
     </div>
     <div class="hidden sm:grid grid-cols-5 gap-2 mt-3 text-[10px] uppercase tracking-wide font-bold text-slate-400">
-      <span data-stepdot="1" class="text-center">1 · Intereses</span>
+      <span data-stepdot="1" class="text-center">1 · Identificación</span>
       <span data-stepdot="2" class="text-center">2 · Aptitudes</span>
       <span data-stepdot="3" class="text-center">3 · Personalidad</span>
       <span data-stepdot="4" class="text-center">4 · Proyectiva</span>
-      <span data-stepdot="5" class="text-center">5 · Test Key</span>
+      <span data-stepdot="5" class="text-center">5 · Informe</span>
     </div>
   </div>
 
@@ -183,7 +171,6 @@ const AREAS = {
     full: 'Ciencias Administrativas, Contables y Económicas',
     color: '#2563eb', bg: '#dbeafe',
     desc: 'Perfil orientado al orden, la organización, la gestión de recursos, el cumplimiento de normas y el manejo estructurado de la información. Se asocia con personalidades de tipo Convencional (Holland) y con las escalas de Cálculo y Oficina (Kuder/Herrera).',
-    careers: ['Administración de Empresas', 'Contaduría Pública', 'Finanzas', 'Recursos Humanos', 'Comercio Internacional', 'Logística y Cadena de Suministro', 'Economía', 'Auditoría', 'Administración Pública', 'Mercadotecnia', 'Negocios Internacionales', 'Estadística'],
     kuderScales: ['Cálculo', 'Oficina']
   },
   H: {
@@ -191,15 +178,13 @@ const AREAS = {
     full: 'Ciencias Humanísticas, Sociales y Educación',
     color: '#db2777', bg: '#fce7f3',
     desc: 'Perfil orientado al servicio, la comunicación, la enseñanza, la comprensión del comportamiento humano y la transformación social. Se relaciona con personalidades de tipo Social (Holland) y con las escalas de Servicio Social y Literario (Kuder/Herrera).',
-    careers: ['Psicología', 'Trabajo Social', 'Pedagogía / Docencia', 'Comunicación Social', 'Sociología', 'Derecho', 'Filosofía', 'Educación Especial', 'Orientación Familiar', 'Gestión Cultural', 'Antropología', 'Historia', 'Literatura'],
-    kuderScales: ['Servicio Social', 'Literario']
+    kuderScales: ['Servicio social', 'Literario']
   },
   A: {
     name: 'Artísticas', short: 'Artísticas',
     full: 'Artes, Diseño y Comunicación Creativa',
     color: '#9333ea', bg: '#f3e8ff',
     desc: 'Perfil orientado a la expresión, la creatividad, la estética y la producción de ideas originales. Se vincula con personalidades de tipo Artístico (Holland) y con las escalas de Artístico y Musical (Kuder/Herrera).',
-    careers: ['Diseño Gráfico', 'Arquitectura', 'Artes Plásticas', 'Música', 'Cine y Producción Audiovisual', 'Diseño de Modas', 'Publicidad Creativa', 'Teatro y Artes Escénicas', 'Diseño de Interiores', 'Animación Digital', 'Fotografía', 'Escultura'],
     kuderScales: ['Artístico', 'Musical']
   },
   S: {
@@ -207,15 +192,13 @@ const AREAS = {
     full: 'Ciencias de la Salud y Asistencia Social',
     color: '#059669', bg: '#d1fae5',
     desc: 'Perfil orientado al cuidado, la prevención, el diagnóstico y el bienestar físico-emocional. Se asocia con personalidades de tipo Social (Holland) y con las escalas de Servicio Social y Científico (Kuder/Herrera).',
-    careers: ['Medicina', 'Enfermería', 'Odontología', 'Fisioterapia', 'Nutrición y Dietética', 'Psicología Clínica', 'Farmacia', 'Medicina Veterinaria', 'Obstetricia', 'Terapia Ocupacional', 'Tecnología Médica', 'Fonoaudiología'],
-    kuderScales: ['Servicio Social', 'Científico']
+    kuderScales: ['Servicio social', 'Científico']
   },
   I: {
     name: 'Ingeniería', short: 'Ingeniería',
     full: 'Ingeniería, Tecnología y Computación',
     color: '#0891b2', bg: '#cffafe',
     desc: 'Perfil orientado al diseño, construcción y optimización de sistemas tecnológicos y mecánicos. Se relaciona con personalidades de tipo Realista e Investigador (Holland) y con las escalas de Mecánico y Cálculo (Kuder/Herrera).',
-    careers: ['Ingeniería de Sistemas', 'Ingeniería Civil', 'Ingeniería Mecánica', 'Ingeniería Electrónica', 'Ciencias de la Computación', 'Desarrollo de Software', 'Ingeniería Industrial', 'Mecatrónica y Robótica', 'Ingeniería Eléctrica', 'Ciberseguridad', 'Ingeniería Química', 'Ingeniería Agronómica'],
     kuderScales: ['Mecánico', 'Cálculo']
   },
   D: {
@@ -223,29 +206,23 @@ const AREAS = {
     full: 'Defensa, Seguridad, Liderazgo y Jurídica',
     color: '#ea580c', bg: '#ffedd5',
     desc: 'Perfil orientado al liderazgo, la toma de decisiones bajo presión, la disciplina y la protección. Se vincula con personalidades de tipo Emprendedor (Holland) y con las escalas de Persuasivo y Aire Libre (Kuder/Herrera).',
-    careers: ['Derecho y Ciencias Jurídicas', 'Criminalística', 'Ciencias Policiales', 'Ciencias Militares', 'Relaciones Internacionales', 'Gestión de Riesgos y Desastres', 'Seguridad Industrial', 'Administración Pública', 'Gestión de Equipos', 'Comercio Exterior', 'Ciencias Políticas', 'Sociología Jurídica'],
-    kuderScales: ['Persuasivo', 'Aire Libre']
+    kuderScales: ['Persuasivo', 'Aire libre']
   },
   E: {
     name: 'Exactas', short: 'Exactas',
     full: 'Ciencias Exactas, Naturales y Agrarias',
     color: '#65a30d', bg: '#ecfccb',
     desc: 'Perfil orientado a la investigación, la experimentación y el análisis riguroso de datos. Se asocia con personalidades de tipo Investigador (Holland) y con las escalas de Científico y Aire Libre (Kuder/Herrera).',
-    careers: ['Matemáticas', 'Física', 'Química', 'Biología', 'Estadística', 'Ingeniería Agronómica', 'Geología', 'Ciencias Ambientales', 'Bioquímica', 'Biotecnología', 'Zootecnia', 'Astronomía', 'Oceanografía'],
-    kuderScales: ['Científico', 'Aire Libre']
+    kuderScales: ['Científico', 'Aire libre']
   }
 };
 
 const AREA_ORDER = ['C', 'H', 'A', 'S', 'I', 'D', 'E'];
-
-const KUDER_SCALES = [
-  'Aire libre', 'Mecánico', 'Cálculo', 'Científico', 'Persuasivo',
-  'Artístico', 'Literario', 'Musical', 'Servicio social', 'Oficina'
-];
+const KUDER_SCALES = ['Aire libre', 'Mecánico', 'Cálculo', 'Científico', 'Persuasivo', 'Artístico', 'Literario', 'Musical', 'Servicio social', 'Oficina'];
 
 /* --- MÓDULO 1: 56 ítems con mapeo OCULTO a CHASIDE + Kuder --- */
 const M1 = [
-  // Área C
+  // Área C (Administrativas) - 8 ítems
   { id: 1,  area: 'C', kuder: 'Oficina',    text: 'Me gusta organizar archivos, clasificar documentos o llevar un control ordenado de datos.' },
   { id: 2,  area: 'C', kuder: 'Cálculo',    text: 'Prefiero seguir reglas claras y procedimientos estructurados en mi trabajo.' },
   { id: 3,  area: 'C', kuder: 'Cálculo',    text: 'Disfruto llevar la contabilidad de una empresa o gestionar presupuestos.' },
@@ -254,7 +231,7 @@ const M1 = [
   { id: 6,  area: 'C', kuder: 'Cálculo',    text: 'Me resulta fácil trabajar con hojas de cálculo y bases de datos.' },
   { id: 7,  area: 'C', kuder: 'Persuasivo', text: 'Me interesa administrar los recursos de una organización para que sea eficiente.' },
   { id: 8,  area: 'C', kuder: 'Oficina',    text: 'Prefiero tareas administrativas que requieren precisión y atención al detalle.' },
-  // Área H
+  // Área H (Humanísticas) - 8 ítems
   { id: 9,  area: 'H', kuder: 'Servicio social', text: 'Me apasiona ayudar a los demás a resolver sus problemas personales o emocionales.' },
   { id: 10, area: 'H', kuder: 'Literario',      text: 'Disfruto enseñar, capacitar o explicar temas complejos a otras personas.' },
   { id: 11, area: 'H', kuder: 'Servicio social', text: 'Me interesa comprender las causas de los problemas sociales y cómo solucionarlos.' },
@@ -263,7 +240,7 @@ const M1 = [
   { id: 14, area: 'H', kuder: 'Persuasivo',     text: 'Me gusta debatir y argumentar mis ideas ante otras personas.' },
   { id: 15, area: 'H', kuder: 'Literario',      text: 'Me agrada escribir ensayos, artículos o reflexiones personales.' },
   { id: 16, area: 'H', kuder: 'Servicio social', text: 'Me interesa participar en proyectos comunitarios o de voluntariado.' },
-  // Área A
+  // Área A (Artísticas) - 8 ítems
   { id: 17, area: 'A', kuder: 'Artístico', text: 'Me atrae expresar mis ideas a través del dibujo, la música, la escritura o el diseño.' },
   { id: 18, area: 'A', kuder: 'Artístico', text: 'Valoro la creatividad y prefiero tareas donde no haya respuestas únicas ni rígidas.' },
   { id: 19, area: 'A', kuder: 'Artístico', text: 'Disfruto visitar museos, exposiciones de arte o asistir a conciertos.' },
@@ -272,7 +249,7 @@ const M1 = [
   { id: 22, area: 'A', kuder: 'Artístico', text: 'Me agrada diseñar, ilustrar o trabajar con formas y colores.' },
   { id: 23, area: 'A', kuder: 'Musical',   text: 'Disfruto cantar, tocar un instrumento o participar en actividades musicales.' },
   { id: 24, area: 'A', kuder: 'Artístico', text: 'Prefiero ambientes donde pueda desarrollar mi imaginación y originalidad.' },
-  // Área S
+  // Área S (Salud) - 8 ítems
   { id: 25, area: 'S', kuder: 'Científico',      text: 'Me interesa entender cómo funciona el cuerpo humano, la biología o la medicina.' },
   { id: 26, area: 'S', kuder: 'Servicio social', text: 'Me siento cómodo/a en entornos asistenciales, cuidando la salud física o el bienestar de otros.' },
   { id: 27, area: 'S', kuder: 'Científico',      text: 'Me gustaría realizar primeros auxilios o ayudar en campañas de prevención de la salud.' },
@@ -281,7 +258,7 @@ const M1 = [
   { id: 30, area: 'S', kuder: 'Científico',      text: 'Me gusta aprender sobre anatomía, fisiología o farmacología.' },
   { id: 31, area: 'S', kuder: 'Servicio social', text: 'Me interesa promover hábitos saludables en la comunidad.' },
   { id: 32, area: 'S', kuder: 'Científico',      text: 'Me atrae la idea de trabajar en un laboratorio clínico o de investigación médica.' },
-  // Área I
+  // Área I (Ingeniería) - 8 ítems
   { id: 33, area: 'I', kuder: 'Mecánico', text: 'Me gusta armar, desarmar, reparar objetos mecánicos o entender el funcionamiento de máquinas.' },
   { id: 34, area: 'I', kuder: 'Cálculo',  text: 'Me atrae programar, trabajar con tecnología o resolver problemas lógicos informáticos.' },
   { id: 35, area: 'I', kuder: 'Mecánico', text: 'Disfruto diseñar o construir objetos, estructuras o sistemas.' },
@@ -290,7 +267,7 @@ const M1 = [
   { id: 38, area: 'I', kuder: 'Mecánico', text: 'Me agrada trabajar con herramientas, maquinaria o equipos técnicos.' },
   { id: 39, area: 'I', kuder: 'Cálculo',  text: 'Disfruto planificar y diseñar soluciones técnicas a problemas prácticos.' },
   { id: 40, area: 'I', kuder: 'Mecánico', text: 'Me interesa la robótica, la automatización o el mantenimiento de sistemas.' },
-  // Área D
+  // Área D (Defensa) - 8 ítems
   { id: 41, area: 'D', kuder: 'Persuasivo', text: 'Me motiva asumir roles de liderazgo, tomar decisiones bajo presión y dirigir equipos.' },
   { id: 42, area: 'D', kuder: 'Aire libre', text: 'Me interesan la estrategia, la disciplina, la protección civil o el ámbito jurídico/militar.' },
   { id: 43, area: 'D', kuder: 'Persuasivo', text: 'Defendería con argumentos mis ideas y las de otros ante una injusticia.' },
@@ -299,7 +276,7 @@ const M1 = [
   { id: 46, area: 'D', kuder: 'Aire libre', text: 'Me interesa el trabajo de campo, la vigilancia o la protección del territorio.' },
   { id: 47, area: 'D', kuder: 'Persuasivo', text: 'Disfruto negociar, mediar o resolver disputas entre personas.' },
   { id: 48, area: 'D', kuder: 'Aire libre', text: 'Me atrae la idea de servir en instituciones de orden, seguridad o justicia.' },
-  // Área E
+  // Área E (Exactas) - 8 ítems
   { id: 49, area: 'E', kuder: 'Científico', text: 'Disfruto investigar, hacer experimentos científicos o analizar fenómenos naturales.' },
   { id: 50, area: 'E', kuder: 'Cálculo',    text: 'Me gusta trabajar con números, fórmulas matemáticas o estadísticas para comprobar hipótesis.' },
   { id: 51, area: 'E', kuder: 'Científico', text: 'Me interesa observar y clasificar plantas, animales o minerales.' },
@@ -310,7 +287,7 @@ const M1 = [
   { id: 56, area: 'E', kuder: 'Aire libre', text: 'Me interesa la geología, la astronomía o las ciencias de la tierra.' }
 ];
 
-/* --- MÓDULO 2: 12 ítems de aptitudes (mapeo oculto a área) --- */
+/* --- MÓDULO 2: 12 ítems de aptitudes (mapeo oculto a área CHASIDE) --- */
 const M2 = [
   { id: 1,  title: 'Razonamiento Lógico-Matemático', desc: 'Facilidad para números, cálculo y resolución de problemas abstractos.', icon: '🔢', area: 'I' },
   { id: 2,  title: 'Aptitud Verbal y Comprensión Lectora', desc: 'Facilidad para redactar, debatir y argumentar ideas.', icon: '📝', area: 'H' },
@@ -326,13 +303,13 @@ const M2 = [
   { id: 12, title: 'Trabajo en Equipo y Colaboración', desc: 'Habilidad para integrarse y aportar en equipos multidisciplinarios.', icon: '👥', area: 'D' }
 ];
 
-/* --- MÓDULO 3: personalidad, valores y contexto --- */
+/* --- MÓDULO 3: personalidad (Big Five), valores (Allport) y contexto (Mooney) --- */
 const M3 = [
-  { id: 'bigfive_apertura',      icon: '🎨', title: '¿Qué tan curioso/a y abierto/a eres a nuevas ideas, experiencias y formas de pensar?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
+  { id: 'bigfive_apertura',        icon: '🎨', title: '¿Qué tan curioso/a y abierto/a eres a nuevas ideas, experiencias y formas de pensar?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
   { id: 'bigfive_responsabilidad', icon: '📋', title: '¿Qué tan organizado/a, cumplido/a y disciplinado/a eres con tus tareas?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
-  { id: 'bigfive_extraversion',  icon: '🗣️', title: '¿Qué tan sociable, enérgico/a y comunicativo/a te consideras?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
-  { id: 'bigfive_amabilidad',    icon: '🤝', title: '¿Qué tan cooperativo/a, empático/a y considerado/a eres con los demás?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
-  { id: 'bigfive_estabilidad',   icon: '🧘', title: '¿Qué tan tranquilo/a y emocionalmente estable te mantienes bajo presión?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
+  { id: 'bigfive_extraversion',    icon: '🗣️', title: '¿Qué tan sociable, enérgico/a y comunicativo/a te consideras?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
+  { id: 'bigfive_amabilidad',      icon: '🤝', title: '¿Qué tan cooperativo/a, empático/a y considerado/a eres con los demás?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
+  { id: 'bigfive_estabilidad',     icon: '🧘', title: '¿Qué tan tranquilo/a y emocionalmente estable te mantienes bajo presión?', options: ['Muy poco', 'Poco', 'Moderado', 'Bastante', 'Muy alto'] },
   { id: 'valor',      icon: '💎', title: '¿Qué es lo más importante que buscas en tu futuro profesional?', options: ['Estabilidad económica', 'Impacto social y ayuda', 'Creatividad y libertad', 'Reconocimiento y prestigio'] },
   { id: 'obstaculo',  icon: '🚧', title: '¿Qué es lo que más te preocupa o te frena en este momento para decidir tu futuro?', options: ['Situación económica / costos', 'Presión o expectativas familiares', 'Rendimiento académico previo', 'Falta de claridad / indecisión'] },
   { id: 'entorno',    icon: '🏢', title: '¿Dónde te gustaría pasar la mayor parte de tu jornada laboral?', options: ['Oficina / Corporativo', 'Laboratorio / Investigación', 'Aire libre / Campo', 'Estudio creativo / Taller', 'Hospital / Clínica'] },
@@ -343,25 +320,18 @@ const M3 = [
 
 const OBSTACLE_TIPS = {
   'Situación económica / costos': 'Explora universidades públicas, programas de becas y créditos educativos, carreras técnicas de corta duración o modalidades virtuales que reducen costos de traslado y materiales. Considera también la formación dual.',
-  'Presión o expectativas familiares': 'Agenda una conversación abierta con tu familia presentando datos objetivos (resultados de esta batería, campo laboral, salarios promedio). Recuerda que la decisión vocacional es tuya y que puedes construir acuerdos sin renunciar a tus intereses.',
+  'Presión o expectativas familiares': 'Agenda una conversación abierta con tu familia presentando datos objetivos (resultados de esta evaluación, campo laboral, salarios promedio). Recuerda que la decisión vocacional es tuya y puedes construir acuerdos sin renunciar a tus intereses.',
   'Rendimiento académico previo': 'Identifica las materias específicas que se te dificultan e invierte en refuerzo focalizado (cursos, tutorías, plataformas gratuitas). Muchas carreras evalúan competencias específicas, no un promedio general.',
   'Falta de claridad / indecisión': 'Realiza entrevistas informativas a profesionales de las 2 o 3 áreas que más te llamaron la atención, visita ferias vocacionales y prueba cursos introductorios gratuitos (MOOCs) antes de comprometerte.'
 };
 
 /* =========================================================
    2. ALEATORIZACIÓN DE ÍTEMS (BLIND TESTING)
-   =========================================================
-   Para evitar sesgos, el orden de presentación de los ítems
-   se baraja en cada carga. Los mapeos internos permanecen
-   intactos. Se genera una semilla distinta cada vez que se
-   inicia el test para garantizar mezcla real.
-*/
-
-let M1_DISPLAY_ORDER = []; // IDs en orden aleatorio
+   ========================================================= */
+let M1_DISPLAY_ORDER = [];
 let M2_DISPLAY_ORDER = [];
 let M3_DISPLAY_ORDER = [];
 
-/* Fisher-Yates shuffle */
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -371,18 +341,12 @@ function shuffleArray(arr) {
   return a;
 }
 
-/* Genera un orden aleatorio que intercala áreas para que no se
-   agrupen por CHASIDE ni por Kuder */
 function buildBlindOrder() {
-  // M1: barajar todos los IDs
   M1_DISPLAY_ORDER = shuffleArray(M1.map(q => q.id));
-  // M2: barajar
   M2_DISPLAY_ORDER = shuffleArray(M2.map(q => q.id));
-  // M3: barajar (excluye los big five que ya están mezclados)
   M3_DISPLAY_ORDER = shuffleArray(M3.map(q => q.id));
 }
 
-/* Obtiene el objeto del ítem M1 por ID */
 function getM1Item(id) { return M1.find(q => q.id === id); }
 function getM2Item(id) { return M2.find(q => q.id === id); }
 function getM3Item(id) { return M3.find(q => q.id === id); }
@@ -391,9 +355,10 @@ function getM3Item(id) { return M3.find(q => q.id === id); }
    3. ESTADO
    ========================================================= */
 const state = {
-  m1: {},   // id -> 1..5
-  m2: {},   // id -> 1..5
-  m3: {},   // id -> índice opción
+  identificacion: { nombre: '', edad: '', email: '', genero: '', institucion: '' },
+  m1: {},
+  m2: {},
+  m3: {},
   m4: { f1: '', f2: '' }
 };
 
@@ -428,11 +393,27 @@ function clearAlert() {
   box.classList.add('hidden');
 }
 
+function showSuccess(msg) {
+  const box = document.getElementById('alertBox');
+  box.innerHTML = `
+    <div class="bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 text-sm px-4 py-3 rounded-r-lg flex items-start gap-2 shadow-sm">
+      <span class="text-base leading-none">✅</span>
+      <span class="font-medium">${msg}</span>
+    </div>`;
+  box.classList.remove('hidden');
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => {
+    if (box.querySelector('.bg-emerald-50')) {
+      box.innerHTML = '';
+      box.classList.add('hidden');
+    }
+  }, 6000);
+}
+
 /* =========================================================
-   5. RENDERIZADO DE MÓDULOS (SIN ETIQUETAS DE ÁREA)
+   5. RENDERIZADO DE MÓDULOS
    ========================================================= */
 
-/* ---------- MÓDULO 1 ---------- */
 function renderModule1() {
   const legend = `
     <div class="flex flex-wrap justify-center gap-2 text-[10px] sm:text-xs text-slate-500 font-medium">
@@ -463,13 +444,55 @@ function renderModule1() {
       </div>`;
   }).join('');
 
+  const identif = state.identificacion;
   return `
     <div class="space-y-4">
+
+      <!-- Tarjeta de identificación -->
+      <div class="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl border border-indigo-200 p-5 shadow-sm">
+        <h2 class="text-base sm:text-lg font-extrabold text-indigo-900 mb-1 flex items-center gap-2">
+          <span>🪪</span> Datos de identificación
+        </h2>
+        <p class="text-[12px] text-indigo-700 mb-4">
+          Esta información se incluirá en el informe que enviarás al orientador vocacional. Por favor, complétala con exactitud.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label for="id_nombre" class="block text-[11px] font-bold text-indigo-900 uppercase tracking-wide mb-1">Nombre completo *</label>
+            <input type="text" id="id_nombre" class="input-field" placeholder="Ej. María Fernanda López" value="${escapeHTML(identif.nombre)}">
+          </div>
+          <div>
+            <label for="id_email" class="block text-[11px] font-bold text-indigo-900 uppercase tracking-wide mb-1">Correo electrónico *</label>
+            <input type="email" id="id_email" class="input-field" placeholder="tucorreo@ejemplo.com" value="${escapeHTML(identif.email)}">
+          </div>
+          <div>
+            <label for="id_edad" class="block text-[11px] font-bold text-indigo-900 uppercase tracking-wide mb-1">Edad *</label>
+            <input type="number" id="id_edad" min="12" max="99" class="input-field" placeholder="Ej. 17" value="${escapeHTML(identif.edad)}">
+          </div>
+          <div>
+            <label for="id_genero" class="block text-[11px] font-bold text-indigo-900 uppercase tracking-wide mb-1">Género</label>
+            <select id="id_genero" class="input-field">
+              <option value="" ${!identif.genero ? 'selected' : ''}>Prefiero no decirlo</option>
+              <option value="Femenino" ${identif.genero === 'Femenino' ? 'selected' : ''}>Femenino</option>
+              <option value="Masculino" ${identif.genero === 'Masculino' ? 'selected' : ''}>Masculino</option>
+              <option value="No binario" ${identif.genero === 'No binario' ? 'selected' : ''}>No binario</option>
+              <option value="Otro" ${identif.genero === 'Otro' ? 'selected' : ''}>Otro</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="id_institucion" class="block text-[11px] font-bold text-indigo-900 uppercase tracking-wide mb-1">Institución educativa o ciudad</label>
+            <input type="text" id="id_institucion" class="input-field" placeholder="Ej. Preparatoria N. 5, Guadalajara" value="${escapeHTML(identif.institucion)}">
+          </div>
+        </div>
+        <p class="text-[11px] text-indigo-600 mt-3 italic">* Campos obligatorios para generar el informe.</p>
+      </div>
+
+      <!-- Módulo 1 -->
       <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 sm:p-5 rounded-r-xl">
         <h2 class="text-base sm:text-lg font-extrabold text-indigo-900">Módulo 1 · Intereses</h2>
         <p class="text-[13px] sm:text-sm text-indigo-700 mt-1">
           Indica tu grado de acuerdo con cada una de las 56 afirmaciones.
-          Responde con total sinceridad: no hay respuestas correctas ni incorrectas y el sistema está diseñado para no revelar qué se evalúa en cada ítem.
+          Responde con total sinceridad: no hay respuestas correctas ni incorrectas.
         </p>
       </div>
       ${legend}
@@ -477,7 +500,6 @@ function renderModule1() {
     </div>`;
 }
 
-/* ---------- MÓDULO 2 ---------- */
 function renderModule2() {
   const legend = `
     <div class="flex flex-wrap justify-center gap-2 text-[10px] sm:text-xs text-slate-500 font-medium">
@@ -518,8 +540,7 @@ function renderModule2() {
       <div class="bg-cyan-50 border-l-4 border-cyan-500 p-4 sm:p-5 rounded-r-xl">
         <h2 class="text-base sm:text-lg font-extrabold text-cyan-900">Módulo 2 · Aptitudes Percibidas</h2>
         <p class="text-[13px] sm:text-sm text-cyan-800 mt-1">
-          Autoevalúa tu nivel de habilidad en cada competencia.
-          No hay respuestas buenas ni malas: lo importante es tu percepción honesta.
+          Autoevalúa tu nivel de habilidad en cada competencia. No hay respuestas buenas ni malas: lo importante es tu percepción honesta.
         </p>
       </div>
       ${legend}
@@ -527,11 +548,11 @@ function renderModule2() {
     </div>`;
 }
 
-/* ---------- MÓDULO 3 ---------- */
 function renderModule3() {
   const blocks = M3_DISPLAY_ORDER.map((id, idx) => {
     const q = getM3Item(id);
     const currentVal = state.m3[q.id];
+    const gridClass = q.options.length > 4 ? 'sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3';
     return `
       <div id="card-m3-${q.id}" class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
         <h3 class="font-bold text-slate-800 text-[15px] mb-3 flex items-start gap-3">
@@ -541,7 +562,7 @@ function renderModule3() {
             <span>${q.title}</span>
           </span>
         </h3>
-        <div class="grid ${q.options.length > 4 ? 'sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'} gap-2">
+        <div class="grid ${gridClass} gap-2">
           ${q.options.map((o, i) => `
             <button type="button" class="opt-btn ${currentVal === i ? 'selected' : ''}"
                     data-m3="${q.id}" data-idx="${i}">${o}</button>
@@ -563,7 +584,6 @@ function renderModule3() {
     </div>`;
 }
 
-/* ---------- MÓDULO 4 ---------- */
 function renderModule4() {
   return `
     <div class="space-y-4">
@@ -602,7 +622,7 @@ function renderModule4() {
 }
 
 /* =========================================================
-   6. MOTOR DE CÁLCULO DEL TEST KEY (INTEGRACIÓN TOTAL)
+   6. MOTOR DE CÁLCULO DEL TEST KEY
    ========================================================= */
 function computeTestKey() {
   /* --- CHASIDE --- */
@@ -661,7 +681,7 @@ function computeTestKey() {
     estabilidad: state.m3['bigfive_estabilidad'] !== undefined ? (state.m3['bigfive_estabilidad'] / 4) * 10 : 5
   };
 
-  /* --- Holland (RIASEC) --- */
+  /* --- Holland (RIASEC) derivado de CHASIDE --- */
   const holland = {
     Realista: (chaside.I + chaside.E) / 2,
     Investigador: (chaside.E + chaside.I + chaside.S) / 3,
@@ -686,7 +706,7 @@ function computeTestKey() {
   const sorted = [...AREA_ORDER].sort((x, y) => integratedScore[y] - integratedScore[x]);
   const secondary = sorted.find(a => a !== predominant);
 
-  /* --- Coherencia múltiple --- */
+  /* --- Coherencia múltiple global --- */
   let sumDiff = 0;
   AREA_ORDER.forEach(a => {
     const kuderAvg = AREAS[a].kuderScales.reduce((s, k) => s + kuder[k], 0) / AREAS[a].kuderScales.length;
@@ -698,6 +718,7 @@ function computeTestKey() {
   const meanDiff = sumDiff / AREA_ORDER.length;
   const coherence = Math.max(0, Math.min(100, Math.round(100 - (meanDiff / 10) * 100)));
 
+  /* --- Diagnóstico --- */
   let diagnosis, diagDesc, diagColor, diagBg;
   if (coherence >= 75) {
     diagnosis = 'Alta Convergencia Vocacional (Test Key)';
@@ -740,7 +761,7 @@ function computeTestKey() {
 }
 
 /* =========================================================
-   7. RENDERIZADO DE RESULTADOS (TEST KEY)
+   7. RENDERIZADO DE RESULTADOS (SIN CARRERAS)
    ========================================================= */
 function renderResults() {
   const r = computeTestKey();
@@ -749,10 +770,7 @@ function renderResults() {
   const P = AREAS[r.predominant];
   const S = AREAS[r.secondary];
 
-  const careerChips = P.careers.map(c =>
-    `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/20 border border-white/30 text-white">${c}</span>`
-  ).join('');
-
+  /* --- Tarjeta del Área Predominante (sin carreras) --- */
   const predCard = `
     <div class="print-card rounded-2xl p-6 sm:p-8 text-white shadow-xl print-break"
          style="background:linear-gradient(135deg, ${P.color} 0%, ${P.color}cc 60%, ${P.color}99 100%)">
@@ -779,11 +797,9 @@ function renderResults() {
           <p class="text-xl font-extrabold">${r.integratedScore[r.predominant].toFixed(1)}<span class="text-sm opacity-80">/10</span></p>
         </div>
       </div>
-
-      <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 mt-6 mb-2">Carreras afines sugeridas</p>
-      <div class="flex flex-wrap gap-2">${careerChips}</div>
     </div>`;
 
+  /* --- Área Complementaria --- */
   const secondaryCard = `
     <div class="print-card bg-white rounded-xl border border-slate-200 p-5 shadow-sm print-break">
       <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Área Complementaria</p>
@@ -795,11 +811,9 @@ function renderResults() {
         </span>
       </div>
       <p class="text-[13px] text-slate-600 leading-relaxed">${S.desc}</p>
-      <p class="text-[12px] text-slate-500 mt-3">
-        <strong class="text-slate-700">Carreras:</strong> ${S.careers.slice(0, 6).join(' · ')}
-      </p>
     </div>`;
 
+  /* --- Diagnóstico Test Key --- */
   const diagBlock = `
     <div class="rounded-xl p-5 border-2 print-break" style="background:${r.diagBg};border-color:${r.diagColor}40">
       <div class="flex items-start gap-3">
@@ -819,6 +833,7 @@ function renderResults() {
       </div>
     </div>`;
 
+  /* --- Gráfico Radar CHASIDE --- */
   const radarCHASIDECard = `
     <div class="print-card bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm print-break">
       <h3 class="text-base sm:text-lg font-extrabold text-slate-800 mb-1 flex items-center gap-2">
@@ -834,6 +849,7 @@ function renderResults() {
       </div>
     </div>`;
 
+  /* --- Gráfico Radar Kuder/Herrera --- */
   const radarKUDERCard = `
     <div class="print-card bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm print-break">
       <h3 class="text-base sm:text-lg font-extrabold text-slate-800 mb-1 flex items-center gap-2">
@@ -847,6 +863,7 @@ function renderResults() {
       </div>
     </div>`;
 
+  /* --- Matriz de Triangulación --- */
   const comparisonRows = AREA_ORDER.map(a => {
     const A = AREAS[a];
     const c = r.coherenceByArea[a];
@@ -903,6 +920,7 @@ function renderResults() {
       </div>`;
   }).join('');
 
+  /* --- Big Five + Holland --- */
   const bigFiveBars = Object.entries(r.bigFive).map(([k, v]) => {
     const labels = { apertura: 'Apertura', responsabilidad: 'Responsabilidad', extraversion: 'Extraversión', amabilidad: 'Amabilidad', estabilidad: 'Estabilidad' };
     const colors = { apertura: '#8b5cf6', responsabilidad: '#3b82f6', extraversion: '#f59e0b', amabilidad: '#ec4899', estabilidad: '#10b981' };
@@ -954,6 +972,7 @@ function renderResults() {
       </div>
     </div>`;
 
+  /* --- Resumen del Proyecto de Vida --- */
   const getM3 = (id) => {
     const q = M3.find(x => x.id === id);
     const idx = state.m3[id];
@@ -1011,17 +1030,70 @@ function renderResults() {
       </div>
     </div>`;
 
+  /* --- Bloque de descarga del informe para el orientador --- */
+  const nombreMostrar = state.identificacion.nombre || 'Estudiante';
+  const informeBlock = `
+    <div class="print-card bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-300 p-5 sm:p-6 shadow-md print-break">
+      <h3 class="text-base sm:text-lg font-extrabold text-emerald-900 mb-1 flex items-center gap-2">
+        <span>📥</span> Descarga tu informe para el Orientador Vocacional
+      </h3>
+      <p class="text-[13px] text-emerald-800 leading-relaxed mb-4">
+        Este es el último paso. <strong>El Test Key no muestra carreras sugeridas</strong> porque esas deben ser interpretadas por un profesional.
+        Descarga el informe completo (contiene <strong>todas tus respuestas, puntuaciones, perfiles y datos de identificación</strong>)
+        y envíalo a tu orientador vocacional. Él lo analizará y te devolverá un resumen personalizado con las <strong>carreras sugeridas</strong>.
+      </p>
+
+      <div class="bg-white/70 rounded-lg p-4 mb-4 border border-emerald-200">
+        <p class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-700 mb-2">📋 Pasos a seguir</p>
+        <ol class="text-[12px] text-emerald-900 space-y-1.5 list-decimal list-inside font-medium">
+          <li>Haz clic en <strong>"Descargar informe completo"</strong> (archivo <code class="bg-emerald-100 px-1 rounded">.json</code>).</li>
+          <li>Envía el archivo a tu orientador vocacional por correo o el medio que te indique.</li>
+          <li>El orientador procesará el informe y te devolverá un resumen con las <strong>carreras más compatibles</strong>.</li>
+          <li>Agenda una sesión de retroalimentación para profundizar en los resultados.</li>
+        </ol>
+      </div>
+
+      <div class="bg-white/70 rounded-lg p-4 mb-4 border border-emerald-200">
+        <p class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-700 mb-2">👤 Datos que se incluirán en el informe</p>
+        <div class="grid sm:grid-cols-2 gap-2 text-[12px] text-emerald-900 font-medium">
+          <div>• Nombre: <strong>${escapeHTML(nombreMostrar)}</strong></div>
+          <div>• Edad: <strong>${escapeHTML(state.identificacion.edad) || '—'}</strong></div>
+          <div>• Email: <strong>${escapeHTML(state.identificacion.email) || '—'}</strong></div>
+          <div>• Género: <strong>${escapeHTML(state.identificacion.genero) || 'No especificado'}</strong></div>
+          <div class="sm:col-span-2">• Institución / Ciudad: <strong>${escapeHTML(state.identificacion.institucion) || '—'}</strong></div>
+          <div class="sm:col-span-2 text-emerald-700">• Todas las respuestas, puntuaciones CHASIDE/Kuder/DAT/Holland/Big Five, orden de presentación de ítems y marcas de tiempo.</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="button" id="btnDownloadJSON"
+          class="flex-1 px-5 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+          📥 Descargar informe completo (.json)
+        </button>
+        <button type="button" id="btnCopyJSON"
+          class="px-5 py-3.5 rounded-xl font-bold text-sm bg-white text-emerald-700 border-2 border-emerald-300 hover:bg-emerald-50 transition-all flex items-center justify-center gap-2">
+          📋 Copiar informe
+        </button>
+      </div>
+
+      <p class="text-[11px] text-emerald-700 mt-3 italic text-center">
+        Guarda una copia del informe. Contiene información confidencial que solo debe compartirse con tu orientador.
+      </p>
+    </div>`;
+
+  /* --- Ensamblado final --- */
   return `
     <div class="space-y-5">
 
       <div class="text-center mb-2 print-break">
         <div class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 shadow-sm">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">Test Key Generado</span>
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">Test Key Completado</span>
         </div>
-        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800 mt-3">Batería Integrada de Orientación Vocacional</h2>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800 mt-3">Tu Perfil Vocacional Integrado</h2>
         <p class="text-[13px] text-slate-500 mt-1 max-w-2xl mx-auto">
           Resultado unificado de <strong>Kuder · Herrera y Montes · CHASIDE · Holland · DAT · Big Five · Allport · Mooney</strong>.
+          Las carreras sugeridas te las entregará tu orientador tras analizar este informe.
         </p>
       </div>
 
@@ -1051,11 +1123,13 @@ function renderResults() {
 
       ${proyectoBlock}
 
+      ${informeBlock}
+
       <div class="print-card bg-slate-50 rounded-xl border border-slate-200 p-5 print-break">
         <h3 class="text-sm font-extrabold text-slate-700 mb-2">📌 Nota metodológica del Test Key</h3>
         <p class="text-[12px] text-slate-500 leading-relaxed">
           El <strong>Test Key</strong> integra seis instrumentos en un solo flujo: <strong>Kuder</strong> y <strong>Herrera y Montes</strong>
-          para intereses, <strong>CHASIDE</strong> para las 7 áreas, <strong>Holland (RIASEC)</strong> para personalidad vocacional,
+          para intereses vocacionales, <strong>CHASIDE</strong> para las 7 áreas, <strong>Holland (RIASEC)</strong> para personalidad vocacional,
           <strong>DAT</strong> para aptitudes, y <strong>Big Five, Allport y Mooney</strong> para personalidad, valores y contexto.
           Los ítems se presentan en orden aleatorio y sin etiquetas visibles para evitar sesgos de respuesta (evaluación ciega).
           El índice integrado pondera: <em>50% interés CHASIDE, 30% aptitud DAT y 20% Kuder/Herrera</em>.
@@ -1065,8 +1139,8 @@ function renderResults() {
 
       <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2 no-print">
         <button onclick="window.print()"
-          class="px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-          🖨️ Imprimir / Exportar a PDF
+          class="px-6 py-3.5 rounded-xl font-bold text-sm bg-white text-slate-600 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-indigo-600 transition-all flex items-center justify-center gap-2">
+          🖨️ Imprimir esta vista
         </button>
         <button id="btnRestart"
           class="px-6 py-3.5 rounded-xl font-bold text-sm bg-white text-slate-600 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-indigo-600 transition-all flex items-center justify-center gap-2">
@@ -1219,6 +1293,18 @@ function markMissing(prefix, ids) {
 
 function validateStep(step) {
   if (step === 1) {
+    const identifMissing = [];
+    if (!state.identificacion.nombre.trim()) identifMissing.push('id_nombre');
+    if (!state.identificacion.email.trim() || !state.identificacion.email.includes('@')) identifMissing.push('id_email');
+    if (!state.identificacion.edad.trim()) identifMissing.push('id_edad');
+    if (identifMissing.length) {
+      identifMissing.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('missing');
+      });
+      showAlert('Debes completar los campos obligatorios de identificación: Nombre, Correo electrónico y Edad.');
+      return false;
+    }
     const missing = M1.filter(q => !state.m1[q.id]).map(q => q.id);
     if (missing.length) {
       markMissing('card-m1', missing);
@@ -1259,11 +1345,11 @@ function validateStep(step) {
    10. NAVEGACIÓN
    ========================================================= */
 const STEP_NAMES = {
-  1: 'Intereses',
+  1: 'Identificación e Intereses',
   2: 'Aptitudes',
   3: 'Personalidad y Valores',
   4: 'Exploración Proyectiva',
-  5: 'Test Key · Resultados'
+  5: 'Test Key · Informe'
 };
 
 function updateProgress() {
@@ -1318,7 +1404,180 @@ function renderStep() {
 }
 
 /* =========================================================
-   11. EVENTOS
+   11. GENERACIÓN DEL INFORME JSON
+   ========================================================= */
+function buildFullReport() {
+  const r = lastResults || computeTestKey();
+
+  const m1Detallado = M1.map(q => ({
+    id: q.id,
+    areaInterna: q.area,
+    escalaKuder: q.kuder,
+    texto: q.text,
+    respuesta: state.m1[q.id] || null
+  }));
+
+  const m2Detallado = M2.map(q => ({
+    id: q.id,
+    areaInterna: q.area,
+    titulo: q.title,
+    descripcion: q.desc,
+    respuesta: state.m2[q.id] || null
+  }));
+
+  const m3Detallado = M3.map(q => ({
+    id: q.id,
+    pregunta: q.title,
+    opciones: q.options,
+    respuestaIndice: state.m3[q.id] !== undefined ? state.m3[q.id] : null,
+    respuestaTexto: state.m3[q.id] !== undefined ? q.options[state.m3[q.id]] : null
+  }));
+
+  return {
+    metadata: {
+      testName: 'Test Key · Batería Integrada de Orientación Vocacional',
+      version: '1.0',
+      instruments: ['Kuder', 'Herrera y Montes', 'CHASIDE', 'Holland (RIASEC)', 'DAT', 'Big Five', 'Allport', 'Mooney'],
+      generatedAt: new Date().toISOString(),
+      generatedAtLocal: new Date().toLocaleString('es-MX'),
+      blindTesting: true,
+      totalItems: M1.length + M2.length + M3.length + 2
+    },
+    identificacion: {
+      nombre: state.identificacion.nombre,
+      edad: state.identificacion.edad,
+      email: state.identificacion.email,
+      genero: state.identificacion.genero || 'No especificado',
+      institucion: state.identificacion.institucion || 'No especificada'
+    },
+    respuestasDetalladas: {
+      modulo1_intereses: m1Detallado,
+      modulo2_aptitudes: m2Detallado,
+      modulo3_personalidad_valores: m3Detallado,
+      modulo4_proyectiva: {
+        proyeccion5años: state.m4.f1,
+        tecnicaRO: state.m4.f2
+      }
+    },
+    ordenPresentacion: {
+      nota: 'Orden aleatorio de presentación de ítems (blind testing). Se incluye para auditoría y detección de patrones de respuesta.',
+      modulo1: M1_DISPLAY_ORDER,
+      modulo2: M2_DISPLAY_ORDER,
+      modulo3: M3_DISPLAY_ORDER
+    },
+    resultadosCalculados: {
+      areaPredominante: {
+        codigo: r.predominant,
+        nombre: AREAS[r.predominant].name,
+        nombreCompleto: AREAS[r.predominant].full,
+        indiceTestKey: Number(r.integratedScore[r.predominant].toFixed(2))
+      },
+      areaSecundaria: {
+        codigo: r.secondary,
+        nombre: AREAS[r.secondary].name,
+        nombreCompleto: AREAS[r.secondary].full,
+        indiceTestKey: Number(r.integratedScore[r.secondary].toFixed(2))
+      },
+      coherenciaGlobal: r.coherence,
+      brechaMedia: Number(r.meanDiff.toFixed(2)),
+      diagnostico: r.diagnosis,
+      diagnosticoDescripcion: r.diagDesc,
+      puntuacionesCHASIDE: Object.fromEntries(AREA_ORDER.map(a => [AREAS[a].name, Number(r.chaside[a].toFixed(2))])),
+      puntuacionesCHASIDERaw: Object.fromEntries(AREA_ORDER.map(a => [AREAS[a].name, r.chasideRaw[a]])),
+      puntuacionesKuderHerrera: Object.fromEntries(KUDER_SCALES.map(s => [s, Number(r.kuder[s].toFixed(2))])),
+      puntuacionesKuderRaw: Object.fromEntries(KUDER_SCALES.map(s => [s, r.kuderRaw[s]])),
+      aptitudesDAT: Object.fromEntries(Object.entries(r.aptitudes).map(([k, v]) => [k, Number(v.toFixed(2))])),
+      aptitudPorArea: Object.fromEntries(AREA_ORDER.map(a => [AREAS[a].name, Number(r.aptitudeByArea[a].toFixed(2))])),
+      perfilBigFive: Object.fromEntries(Object.entries(r.bigFive).map(([k, v]) => [k, Number(v.toFixed(2))])),
+      perfilHolland: Object.fromEntries(Object.entries(r.holland).map(([k, v]) => [k, Number(v.toFixed(2))])),
+      indiceTestKeyPorArea: Object.fromEntries(AREA_ORDER.map(a => [AREAS[a].name, Number(r.integratedScore[a].toFixed(2))])),
+      coherenciaPorArea: Object.fromEntries(AREA_ORDER.map(a => [
+        AREAS[a].name,
+        {
+          etiqueta: r.coherenceByArea[a].label,
+          diferencia: Number(r.coherenceByArea[a].diff.toFixed(2)),
+          interes: Number(r.coherenceByArea[a].interest.toFixed(2)),
+          aptitud: Number(r.coherenceByArea[a].aptitude.toFixed(2)),
+          kuderPromedio: Number(r.coherenceByArea[a].kuderAvg.toFixed(2)),
+          indiceIntegrado: Number(r.coherenceByArea[a].integrated.toFixed(2))
+        }
+      ]))
+    },
+    interpretacionParaOrientador: {
+      nota: 'Este informe contiene los datos crudos y calculados del Test Key. El orientador vocacional debe interpretar estos resultados y devolver al estudiante un resumen personalizado con las carreras sugeridas.',
+      ponderacionIndiceTestKey: '50% Interés CHASIDE + 30% Aptitud DAT + 20% Kuder/Herrera',
+      umbralesCoherencia: {
+        alta: '≥75% (Alta Convergencia)',
+        media: '55-74% (Convergencia Moderada)',
+        baja: '<55% (Divergencia / Requiere Exploración)'
+      }
+    }
+  };
+}
+
+function descargarJSON() {
+  try {
+    const report = buildFullReport();
+    const json = JSON.stringify(report, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const nombreArchivo = (state.identificacion.nombre || 'estudiante')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '') || 'estudiante';
+
+    const fecha = new Date().toISOString().slice(0, 10);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `test_key_${nombreArchivo}_${fecha}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showSuccess('✅ Informe descargado correctamente. Envíalo a tu orientador vocacional.');
+  } catch (err) {
+    console.error(err);
+    alert('Ocurrió un error al generar el informe. Por favor, inténtalo de nuevo.');
+  }
+}
+
+function copiarJSON() {
+  try {
+    const report = buildFullReport();
+    const json = JSON.stringify(report, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(() => {
+        showSuccess('✅ Informe copiado al portapapeles. Pégalo en un correo o mensaje para tu orientador.');
+      }).catch(() => copiarFallback(json));
+    } else {
+      copiarFallback(json);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('No se pudo copiar el informe. Intenta descargarlo.');
+  }
+}
+
+function copiarFallback(texto) {
+  const ta = document.createElement('textarea');
+  ta.value = texto;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showSuccess('✅ Informe copiado al portapapeles.');
+  } catch (e) {
+    alert('No se pudo copiar automáticamente. Descarga el informe en su lugar.');
+  }
+  document.body.removeChild(ta);
+}
+
+/* =========================================================
+   12. EVENTOS
    ========================================================= */
 document.getElementById('btnNext').addEventListener('click', () => {
   if (!validateStep(currentStep)) return;
@@ -1336,6 +1595,7 @@ document.getElementById('btnPrev').addEventListener('click', () => {
 });
 
 document.getElementById('content').addEventListener('click', (e) => {
+  // Likert Módulo 1
   const b1 = e.target.closest('[data-m1]');
   if (b1) {
     const qid = Number(b1.getAttribute('data-m1'));
@@ -1349,6 +1609,7 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
+  // Likert Módulo 2
   const b2 = e.target.closest('[data-m2]');
   if (b2) {
     const qid = Number(b2.getAttribute('data-m2'));
@@ -1362,6 +1623,7 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
+  // Opciones Módulo 3
   const b3 = e.target.closest('[data-m3]');
   if (b3) {
     const qid = b3.getAttribute('data-m3');
@@ -1376,6 +1638,19 @@ document.getElementById('content').addEventListener('click', (e) => {
     return;
   }
 
+  // Descargar JSON
+  if (e.target.closest('#btnDownloadJSON')) {
+    descargarJSON();
+    return;
+  }
+
+  // Copiar JSON
+  if (e.target.closest('#btnCopyJSON')) {
+    copiarJSON();
+    return;
+  }
+
+  // Reinicio
   const bRestart = e.target.closest('#btnRestart');
   if (bRestart) {
     if (confirm('¿Deseas borrar todas tus respuestas y comenzar una nueva evaluación?')) {
@@ -1385,7 +1660,14 @@ document.getElementById('content').addEventListener('click', (e) => {
   }
 });
 
+/* Manejo de inputs de identificación y Módulo 4 */
 document.getElementById('content').addEventListener('input', (e) => {
+  const idField = e.target.id;
+  if (idField === 'id_nombre') { state.identificacion.nombre = e.target.value; e.target.classList.remove('missing'); return; }
+  if (idField === 'id_email') { state.identificacion.email = e.target.value; e.target.classList.remove('missing'); return; }
+  if (idField === 'id_edad') { state.identificacion.edad = e.target.value; e.target.classList.remove('missing'); return; }
+  if (idField === 'id_institucion') { state.identificacion.institucion = e.target.value; return; }
+
   const t = e.target.closest('[data-m4]');
   if (t) {
     const field = t.getAttribute('data-m4');
@@ -1395,7 +1677,15 @@ document.getElementById('content').addEventListener('input', (e) => {
   }
 });
 
+/* Select de género */
+document.getElementById('content').addEventListener('change', (e) => {
+  if (e.target.id === 'id_genero') {
+    state.identificacion.genero = e.target.value;
+  }
+});
+
 function resetAll() {
+  state.identificacion = { nombre: '', edad: '', email: '', genero: '', institucion: '' };
   state.m1 = {};
   state.m2 = {};
   state.m3 = {};
@@ -1405,13 +1695,12 @@ function resetAll() {
   if (chartKUDER) { chartKUDER.destroy(); chartKUDER = null; }
   currentStep = 1;
   clearAlert();
-  // Regenerar orden aleatorio al reiniciar
   buildBlindOrder();
   renderStep();
 }
 
 /* =========================================================
-   12. INICIALIZACIÓN
+   13. INICIALIZACIÓN
    ========================================================= */
 buildBlindOrder();
 renderStep();
