@@ -55,6 +55,36 @@
 
   textarea:focus, input:focus { outline: none; }
 
+  /* Tooltips */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    border-bottom: 1px dotted #94a3b8;
+  }
+  .tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #1e293b;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 6px 10px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 400;
+  }
+  .tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+
   @media print {
     .no-print { display: none !important; }
     body { background: #fff !important; }
@@ -88,6 +118,7 @@
 
 <main class="flex-1 w-full max-w-5xl mx-auto px-4 py-6 sm:py-8">
 
+  <!-- Barra de Progreso -->
   <div class="mb-6 no-print">
     <div class="flex justify-between items-center mb-2">
       <span class="text-xs font-bold text-slate-500 uppercase tracking-wide" id="stepLabel">Paso 1 de 5</span>
@@ -111,6 +142,7 @@
 
   <div id="content" class="fade-in"></div>
 
+  <!-- Botones de navegación -->
   <div class="flex justify-between items-center gap-3 mt-8 no-print">
     <button id="btnPrev"
       class="px-5 py-3 rounded-xl font-semibold text-sm bg-white text-slate-600 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-indigo-600 transition-all">
@@ -187,7 +219,7 @@ const AREAS = {
 
 const AREA_ORDER = ['C', 'H', 'A', 'S', 'I', 'D', 'E'];
 
-/* ---------- MÓDULO 1: CHASIDE + RIASEC (28 ítems, 4 por área) ---------- */
+/* ---------- MÓDULO 1: CHASIDE + RIASEC (28 ítems) ---------- */
 const M1 = [
   { id: 1,  area: 'C', text: 'Me gusta organizar archivos, clasificar documentos o llevar un control ordenado de datos.' },
   { id: 2,  area: 'C', text: 'Prefiero seguir reglas claras y procedimientos estructurados en mi trabajo.' },
@@ -235,13 +267,13 @@ const M2 = [
 
 /* Mapeo Aptitud (índice 0-based del Módulo 2) → Áreas CHASIDE */
 const APT_MAP = {
-  C: [0, 7],        // Lógico-Matemático + Organización
-  H: [1, 4, 9],     // Verbal + Interpersonal + Comunicación
-  A: [1, 6, 9],     // Verbal + Creatividad + Comunicación
-  S: [4, 5, 9],     // Interpersonal + Científico + Comunicación
-  I: [2, 3, 0],     // Espacial + Mecánica + Lógico-Matemático
-  D: [3, 4, 8],     // Mecánica + Interpersonal + Liderazgo
-  E: [0, 5, 6]      // Lógico-Matemático + Científico + Creatividad
+  C: [0, 7],
+  H: [1, 4, 9],
+  A: [1, 6, 9],
+  S: [4, 5, 9],
+  I: [2, 3, 0],
+  D: [3, 4, 8],
+  E: [0, 5, 6]
 };
 
 /* ---------- MÓDULO 3: VALORES, CONTEXTO Y OBSTÁCULOS (6 ítems) ---------- */
@@ -300,6 +332,14 @@ let currentStep = 1;
 let lastResults = null;
 let chartInstance = null;
 
+// Variables para validación externa y confianza
+let validationState = {
+  omitted: false,
+  evaluators: [], // {name, empathy, listening, leadership, organization, communication}
+  externalTests: [] // {name, type, score, weight}
+};
+let confidenceData = null;
+
 /* =========================================================
    3. UTILIDADES
    ========================================================= */
@@ -326,8 +366,114 @@ function clearAlert() {
   box.classList.add('hidden');
 }
 
+/* Guardar y cargar estado en localStorage */
+function saveState() {
+  const data = {
+    state,
+    validationState,
+    currentStep: 5 // Solo guardamos si estamos en resultados
+  };
+  localStorage.setItem('vocationalTestState', JSON.stringify(data));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('vocationalTestState');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.state) Object.assign(state, data.state);
+      if (data.validationState) {
+        Object.assign(validationState, data.validationState);
+      }
+      // Si ya hay resultados, ir al paso 5
+      if (data.currentStep === 5 && state.m1 && Object.keys(state.m1).length > 0) {
+        currentStep = 5;
+      }
+    } catch (e) {
+      console.warn('Error al cargar estado guardado:', e);
+    }
+  }
+}
+
 /* =========================================================
-   4. RENDERIZADO DE MÓDULOS
+   4. CÁLCULO DE CONFIANZA GLOBAL
+   ========================================================= */
+function computeConfidence(results) {
+  // Confianza base = coherencia interna del test (0-100)
+  const base = results.coherence; // Ya es un porcentaje
+
+  // Ajuste por Validación 360°
+  let validation360 = 0;
+  let validation360Label = '';
+  if (validationState.omitted) {
+    validation360 = -5;
+    validation360Label = 'Omitida (-5%)';
+  } else if (validationState.evaluators.length >= 3) {
+    validation360 = 10;
+    validation360Label = 'Completa (+10%)';
+  } else if (validationState.evaluators.length >= 1) {
+    validation360 = 5;
+    validation360Label = 'Parcial (+5%)';
+  } else {
+    validation360 = 0;
+    validation360Label = 'No realizada (0%)';
+  }
+
+  // Ajuste por Tests Externos
+  const externalWeights = {
+    'Kuder': 8,
+    'Herrera': 6,
+    'CHASIDE': 5,
+    'DAT': 5,
+    'Holland': 4,
+    'Big Five': 4,
+    '16PF': 4,
+    'Autoeficacia Vocacional': 3,
+    'Otro': 3
+  };
+
+  let externalSum = 0;
+  let externalDetails = [];
+  let otherCount = 0;
+
+  validationState.externalTests.forEach(t => {
+    let weight = t.weight || externalWeights[t.type] || 3;
+    // Si es "Otro", limitar a 12% acumulable
+    if (t.type === 'Otro') {
+      otherCount++;
+      if (otherCount > 4) weight = 0; // máximo 4 tests "Otro" (12%)
+    }
+    // Modular por puntaje
+    let scoreMod = 1;
+    if (t.score !== undefined && t.score !== null) {
+      if (t.score >= 7) scoreMod = 1;
+      else if (t.score >= 4) scoreMod = 0.5;
+      else scoreMod = 0;
+    }
+    const finalWeight = weight * scoreMod;
+    externalSum += finalWeight;
+    externalDetails.push({ name: t.name || t.type, weight: finalWeight, type: t.type, score: t.score });
+  });
+
+  // Limitar suma externa a 25% (para no superar el 95% final)
+  externalSum = Math.min(externalSum, 25);
+
+  // Confianza final
+  let finalConfidence = base + validation360 + externalSum;
+  finalConfidence = Math.min(95, Math.max(0, finalConfidence));
+
+  return {
+    base,
+    validation360,
+    validation360Label,
+    externalSum,
+    externalDetails,
+    finalConfidence
+  };
+}
+
+/* =========================================================
+   5. RENDERIZADO DE MÓDULOS (original)
    ========================================================= */
 
 function renderModule1() {
@@ -488,31 +634,27 @@ function renderModule4() {
 }
 
 /* =========================================================
-   5. CÁLCULO DE RESULTADOS
+   6. CÁLCULO DE RESULTADOS (original)
    ========================================================= */
 function computeResults() {
-  /* --- Intereses (Módulo 1): suma directa, rango 4 a 20 --- */
   const interest = {};
   AREA_ORDER.forEach(a => interest[a] = 0);
   M1.forEach(q => {
     interest[q.area] += Number(state.m1[q.id] || 0);
   });
-  // Normalizar a escala 0-10
   const interestNorm = {};
   AREA_ORDER.forEach(a => {
-    interestNorm[a] = ((interest[a] - 4) / 16) * 10; // (valor - min) / (max - min) * 10
+    interestNorm[a] = ((interest[a] - 4) / 16) * 10;
   });
 
-  /* --- Aptitudes (Módulo 2) normalizadas a escala 0-10 --- */
   const aptRaw = M2.map(q => Number(state.m2[q.id] || 0));
   const aptitude = {};
   AREA_ORDER.forEach(a => {
     const idxs = APT_MAP[a];
-    const avg = idxs.reduce((s, i) => s + aptRaw[i], 0) / idxs.length; // 1..5
-    aptitude[a] = ((avg - 1) / 4) * 10; // 0..10
+    const avg = idxs.reduce((s, i) => s + aptRaw[i], 0) / idxs.length;
+    aptitude[a] = ((avg - 1) / 4) * 10;
   });
 
-  /* --- Área predominante --- */
   let predominant = AREA_ORDER[0];
   AREA_ORDER.forEach(a => {
     if (
@@ -523,11 +665,9 @@ function computeResults() {
     }
   });
 
-  /* --- Área secundaria --- */
   const sorted = [...AREA_ORDER].sort((x, y) => interestNorm[y] - interestNorm[x] || aptitude[y] - aptitude[x]);
   const secondary = sorted.find(a => a !== predominant);
 
-  /* --- Coherencia global (Interés vs Aptitud) --- */
   let sumDiff = 0;
   AREA_ORDER.forEach(a => { sumDiff += Math.abs(interestNorm[a] - aptitude[a]); });
   const meanDiff = sumDiff / AREA_ORDER.length;
@@ -548,7 +688,6 @@ function computeResults() {
     diagColor = '#be123c'; diagBg = '#fff1f2';
   }
 
-  /* --- Coherencia por área --- */
   const coherenceByArea = {};
   AREA_ORDER.forEach(a => {
     const diff = Math.abs(interestNorm[a] - aptitude[a]);
@@ -575,16 +714,19 @@ function computeResults() {
 }
 
 /* =========================================================
-   6. RENDERIZADO DE RESULTADOS (MÓDULO 5)
+   7. RENDERIZADO DE RESULTADOS (CON CONFIANZA Y VALIDACIÓN)
    ========================================================= */
 function renderResults() {
   const r = computeResults();
   lastResults = r;
 
+  // Calcular confianza global
+  const conf = computeConfidence(r);
+  confidenceData = conf;
+
   const P = AREAS[r.predominant];
   const S = AREAS[r.secondary];
 
-  /* --- Tarjeta de área predominante --- */
   const careerChips = P.careers.map(c =>
     `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/20 border border-white/30 text-white">${c}</span>`
   ).join('');
@@ -616,7 +758,6 @@ function renderResults() {
       <div class="flex flex-wrap gap-2">${careerChips}</div>
     </div>`;
 
-  /* --- Área secundaria --- */
   const secondaryCard = `
     <div class="print-card bg-white rounded-xl border border-slate-200 p-5 shadow-sm print-break">
       <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Área Complementaria</p>
@@ -633,7 +774,6 @@ function renderResults() {
       </p>
     </div>`;
 
-  /* --- Diagnóstico de triangulación --- */
   const diagBlock = `
     <div class="rounded-xl p-5 border-2 print-break" style="background:${r.diagBg};border-color:${r.diagColor}40">
       <div class="flex items-start gap-3">
@@ -653,7 +793,6 @@ function renderResults() {
       </div>
     </div>`;
 
-  /* --- Filas de comparación por área --- */
   const comparisonRows = AREA_ORDER.map(a => {
     const A = AREAS[a];
     const c = r.coherenceByArea[a];
@@ -694,7 +833,6 @@ function renderResults() {
       </div>`;
   }).join('');
 
-  /* --- Resumen del proyecto de vida --- */
   const getM3 = (id) => {
     const q = M3.find(x => x.id === id);
     const idx = state.m3[id];
@@ -752,7 +890,117 @@ function renderResults() {
       </div>
     </div>`;
 
-  /* --- Ensamblado final --- */
+  /* --- Sección de confianza y validación (NUEVA) --- */
+  const confidenceSection = `
+    <div class="print-card bg-white rounded-xl border border-slate-200 p-5 sm:p-6 shadow-sm print-break">
+      <h3 class="text-base sm:text-lg font-extrabold text-slate-800 mb-1 flex items-center gap-2">
+        <span>📊</span> Fuentes de Validación y Confianza
+      </h3>
+      <p class="text-[12px] text-slate-500 mb-5">
+        La confianza en tus resultados aumenta cuando se contrastan con múltiples fuentes: tu propia coherencia interna, la opinión de otras personas y tests estandarizados externos.
+      </p>
+
+      <!-- Medidor de confianza -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-bold text-slate-700">Confianza Global</span>
+          <span class="text-2xl font-extrabold ${conf.finalConfidence >= 85 ? 'text-emerald-600' : conf.finalConfidence >= 60 ? 'text-amber-600' : 'text-rose-600'}">
+            ${conf.finalConfidence}%
+          </span>
+        </div>
+        <div class="h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+          <div class="h-full rounded-full transition-all duration-700 ${conf.finalConfidence >= 85 ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' : conf.finalConfidence >= 60 ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-rose-400 to-rose-600'}"
+               style="width:${conf.finalConfidence}%"></div>
+        </div>
+        <p class="text-[11px] mt-2 font-medium ${conf.finalConfidence >= 85 ? 'text-emerald-600' : conf.finalConfidence >= 60 ? 'text-amber-600' : 'text-rose-600'}">
+          ${conf.finalConfidence >= 85 ? '✅ Confianza alta. Tus resultados están bien respaldados por múltiples fuentes.' :
+            conf.finalConfidence >= 60 ? '⚠️ Confianza media. Considera agregar más fuentes de validación para mayor certeza.' :
+            '🔴 Confianza baja. Considera agregar más fuentes de validación o consultar a un orientador.'}
+        </p>
+      </div>
+
+      <!-- Desglose -->
+      <div class="bg-slate-50 rounded-lg p-4 mb-6 space-y-2 text-[13px]">
+        <div class="flex justify-between items-center">
+          <span class="text-slate-600">Confianza base (coherencia interna)</span>
+          <span class="font-bold text-slate-800">${conf.base}%</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-600">Validación 360° <span class="tooltip">ℹ️<span class="tooltip-text">Evaluación de 3-4 personas sobre tus habilidades blandas. Si son 3+ personas, suma +10%; 1-2 personas, +5%; omitida, -5%.</span></span></span>
+          <span class="font-bold ${conf.validation360 >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${conf.validation360 >= 0 ? '+' : ''}${conf.validation360}% <span class="text-slate-400 font-normal">(${conf.validation360Label})</span></span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-600">Tests externos <span class="tooltip">ℹ️<span class="tooltip-text">Cada test suma según su peso: Kuder +8%, Herrera +6%, CHASIDE +5%, DAT +5%, Holland +4%, etc. El puntaje modula el peso: alto = 100%, medio = 50%, bajo = 0%.</span></span></span>
+          <span class="font-bold text-indigo-600">+${conf.externalSum.toFixed(1)}%</span>
+        </div>
+        <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
+          <span class="font-bold text-slate-700">Confianza final</span>
+          <span class="font-extrabold text-lg ${conf.finalConfidence >= 85 ? 'text-emerald-600' : conf.finalConfidence >= 60 ? 'text-amber-600' : 'text-rose-600'}">${conf.finalConfidence}%</span>
+        </div>
+      </div>
+
+      <!-- Sección de validación 360° (interactiva) -->
+      <div class="mb-6 border-t border-slate-200 pt-5">
+        <h4 class="text-sm font-extrabold text-slate-700 mb-3 flex items-center gap-2">
+          <span>👥</span> Validación 360° (opcional)
+          <span class="tooltip">ℹ️<span class="tooltip-text">Pide a 3-4 personas que te evalúen en habilidades blandas. Suma hasta +10% a la confianza.</span></span>
+        </h4>
+
+        <div id="validation360Area">
+          <!-- Aquí se renderizan dinámicamente los evaluadores -->
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-3">
+          <button type="button" id="btnAddEvaluator" class="px-4 py-2 rounded-lg text-sm font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-all">
+            ➕ Agregar evaluador
+          </button>
+          <button type="button" id="btnOmitValidation" class="px-4 py-2 rounded-lg text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-all">
+            ⏭️ Omitir validación externa
+          </button>
+        </div>
+        <p id="validationOmittedMsg" class="hidden text-[12px] text-amber-700 mt-2 font-medium"></p>
+      </div>
+
+      <!-- Sección de tests externos -->
+      <div class="border-t border-slate-200 pt-5">
+        <h4 class="text-sm font-extrabold text-slate-700 mb-3 flex items-center gap-2">
+          <span>📋</span> Tests externos (opcional)
+          <span class="tooltip">ℹ️<span class="tooltip-text">Agrega resultados de tests como Kuder, Herrera, CHASIDE, DAT, Holland, Big Five, etc. Cada uno suma a la confianza según su peso.</span></span>
+        </h4>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+          <select id="extTestType" class="rounded-lg border border-slate-300 p-2 text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+            <option value="">Selecciona tipo...</option>
+            <option value="Kuder">Kuder</option>
+            <option value="Herrera">Herrera</option>
+            <option value="CHASIDE">CHASIDE</option>
+            <option value="DAT">DAT</option>
+            <option value="Holland">Holland (RIASEC)</option>
+            <option value="Big Five">Big Five</option>
+            <option value="16PF">16PF</option>
+            <option value="Autoeficacia Vocacional">Autoeficacia Vocacional</option>
+            <option value="Otro">Otro (especificar)</option>
+          </select>
+          <input type="text" id="extTestName" placeholder="Nombre del test (si es Otro)" class="rounded-lg border border-slate-300 p-2 text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+          <input type="number" id="extTestScore" placeholder="Puntaje (0-10)" min="0" max="10" step="0.1" class="rounded-lg border border-slate-300 p-2 text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+          <button type="button" id="btnAddExtTest" class="px-4 py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-all">
+            Agregar
+          </button>
+        </div>
+
+        <div id="extTestsList" class="space-y-2 mb-3">
+          <!-- Lista dinámica de tests externos -->
+        </div>
+      </div>
+
+      <!-- Botón exportar informe -->
+      <div class="border-t border-slate-200 pt-5 mt-5 flex flex-wrap gap-2">
+        <button type="button" id="btnExportReport" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md hover:shadow-lg transition-all">
+          📥 Exportar informe (JSON)
+        </button>
+      </div>
+    </div>`;
+
   return `
     <div class="space-y-5">
 
@@ -802,6 +1050,9 @@ function renderResults() {
 
       ${proyectoBlock}
 
+      <!-- Sección de confianza y validación -->
+      ${confidenceSection}
+
       <!-- Nota metodológica -->
       <div class="print-card bg-slate-50 rounded-xl border border-slate-200 p-5 print-break">
         <h3 class="text-sm font-extrabold text-slate-700 mb-2">📌 Nota metodológica</h3>
@@ -830,7 +1081,7 @@ function renderResults() {
 }
 
 /* =========================================================
-   7. GRÁFICO RADAR (Chart.js)
+   8. GRÁFICO RADAR (Chart.js)
    ========================================================= */
 function createRadarChart() {
   const canvas = document.getElementById('radarChart');
@@ -928,55 +1179,272 @@ function createRadarChart() {
 }
 
 /* =========================================================
-   8. VALIDACIÓN
+   9. RENDERIZADO DINÁMICO DE VALIDACIÓN Y TESTS EXTERNOS
    ========================================================= */
-function markMissing(prefix, ids) {
-  ids.forEach(id => {
-    const el = document.getElementById(`${prefix}-${id}`);
-    if (el) el.classList.add('missing-card');
-  });
+
+/* Renderiza la lista de evaluadores 360° */
+function renderEvaluators() {
+  const area = document.getElementById('validation360Area');
+  if (!area) return;
+
+  if (validationState.omitted) {
+    area.innerHTML = `
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
+        <p class="font-bold">Validación 360° omitida</p>
+        <p class="text-[12px] mt-1">La confianza se reduce un 5%. Puedes compensar agregando tests externos.</p>
+      </div>`;
+    document.getElementById('btnAddEvaluator').disabled = true;
+    document.getElementById('btnAddEvaluator').classList.add('opacity-50', 'cursor-not-allowed');
+    document.getElementById('btnOmitValidation').disabled = true;
+    document.getElementById('btnOmitValidation').classList.add('opacity-50', 'cursor-not-allowed');
+    document.getElementById('validationOmittedMsg').classList.remove('hidden');
+    document.getElementById('validationOmittedMsg').textContent = 'Validación externa omitida. La confianza se reduce un 5%. Puedes compensar agregando tests externos.';
+    return;
+  }
+
+  // Renderizar evaluadores existentes
+  area.innerHTML = validationState.evaluators.map((ev, i) => `
+    <div class="bg-slate-50 rounded-lg p-3 mb-2 border border-slate-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm text-slate-700">Evaluador ${i + 1}</span>
+        <button type="button" class="text-rose-500 hover:text-rose-700 text-xs font-bold" data-remove-eval="${i}">✕ Eliminar</button>
+      </div>
+      <input type="text" value="${escapeHTML(ev.name)}" placeholder="Nombre" data-eval-name="${i}" class="w-full rounded border border-slate-300 p-1.5 text-sm mb-2">
+      <div class="grid grid-cols-5 gap-1 text-[11px]">
+        <div>
+          <label class="block text-slate-500 text-center mb-0.5">Empatía</label>
+          <input type="number" min="1" max="5" value="${ev.empathy || ''}" data-eval-skill="empathy" data-eval-idx="${i}" class="w-full rounded border border-slate-300 p-1 text-center">
+        </div>
+        <div>
+          <label class="block text-slate-500 text-center mb-0.5">Escucha</label>
+          <input type="number" min="1" max="5" value="${ev.listening || ''}" data-eval-skill="listening" data-eval-idx="${i}" class="w-full rounded border border-slate-300 p-1 text-center">
+        </div>
+        <div>
+          <label class="block text-slate-500 text-center mb-0.5">Liderazgo</label>
+          <input type="number" min="1" max="5" value="${ev.leadership || ''}" data-eval-skill="leadership" data-eval-idx="${i}" class="w-full rounded border border-slate-300 p-1 text-center">
+        </div>
+        <div>
+          <label class="block text-slate-500 text-center mb-0.5">Organización</label>
+          <input type="number" min="1" max="5" value="${ev.organization || ''}" data-eval-skill="organization" data-eval-idx="${i}" class="w-full rounded border border-slate-300 p-1 text-center">
+        </div>
+        <div>
+          <label class="block text-slate-500 text-center mb-0.5">Comunicación</label>
+          <input type="number" min="1" max="5" value="${ev.communication || ''}" data-eval-skill="communication" data-eval-idx="${i}" class="w-full rounded border border-slate-300 p-1 text-center">
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Actualizar UI de botones
+  document.getElementById('btnAddEvaluator').disabled = validationState.evaluators.length >= 4;
+  document.getElementById('btnAddEvaluator').classList.toggle('opacity-50', validationState.evaluators.length >= 4);
+  document.getElementById('btnOmitValidation').disabled = validationState.evaluators.length > 0;
+  document.getElementById('btnOmitValidation').classList.toggle('opacity-50', validationState.evaluators.length > 0);
 }
 
-function validateStep(step) {
-  if (step === 1) {
-    const missing = M1.filter(q => !state.m1[q.id]).map(q => q.id);
-    if (missing.length) {
-      markMissing('card-m1', missing);
-      showAlert(`Faltan ${missing.length} afirmación(es) por responder en el Módulo 1. Debes responder las 28 para continuar.`);
-      return false;
-    }
+/* Renderiza la lista de tests externos */
+function renderExternalTests() {
+  const list = document.getElementById('extTestsList');
+  if (!list) return;
+
+  if (validationState.externalTests.length === 0) {
+    list.innerHTML = `<p class="text-[12px] text-slate-400 italic">No hay tests externos agregados.</p>`;
+    return;
   }
-  if (step === 2) {
-    const missing = M2.filter(q => !state.m2[q.id]).map(q => q.id);
-    if (missing.length) {
-      markMissing('card-m2', missing);
-      showAlert(`Faltan ${missing.length} competencia(s) por autoevaluar en el Módulo 2. Debes responder las 10 para continuar.`);
-      return false;
+
+  list.innerHTML = validationState.externalTests.map((t, i) => {
+    // Calcular peso visual
+    const weightMap = { 'Kuder': 8, 'Herrera': 6, 'CHASIDE': 5, 'DAT': 5, 'Holland': 4, 'Big Five': 4, '16PF': 4, 'Autoeficacia Vocacional': 3, 'Otro': 3 };
+    let baseWeight = t.weight || weightMap[t.type] || 3;
+    let mod = 1;
+    if (t.score !== undefined && t.score !== null) {
+      if (t.score >= 7) mod = 1;
+      else if (t.score >= 4) mod = 0.5;
+      else mod = 0;
     }
-  }
-  if (step === 3) {
-    const missing = M3.filter(q => state.m3[q.id] === undefined).map(q => q.id);
-    if (missing.length) {
-      markMissing('card-m3', missing);
-      showAlert(`Faltan ${missing.length} pregunta(s) por responder en el Módulo 3.`);
-      return false;
-    }
-  }
-  if (step === 4) {
-    const faltantes = [];
-    if (!state.m4.f1.trim() || state.m4.f1.trim().length < 5) faltantes.push('f1');
-    if (!state.m4.f2.trim() || state.m4.f2.trim().length < 5) faltantes.push('f2');
-    if (faltantes.length) {
-      markMissing('card-m4', faltantes);
-      showAlert('Debes completar ambos ejercicios proyectivos (mínimo 5 caracteres cada uno) antes de generar el reporte.');
-      return false;
-    }
-  }
-  return true;
+    const effectiveWeight = (baseWeight * mod).toFixed(1);
+
+    return `
+      <div class="flex items-center justify-between bg-slate-50 rounded-lg p-2.5 border border-slate-200">
+        <div class="min-w-0">
+          <span class="font-bold text-sm text-slate-700">${escapeHTML(t.name || t.type)}</span>
+          <span class="text-[11px] text-slate-500 ml-2">(${t.type})</span>
+          ${t.score !== undefined ? `<span class="text-[11px] text-slate-500 ml-2">Puntaje: ${t.score}</span>` : ''}
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-bold text-indigo-600">+${effectiveWeight}%</span>
+          <button type="button" class="text-rose-500 hover:text-rose-700 text-xs font-bold" data-remove-ext="${i}">✕</button>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* =========================================================
-   9. NAVEGACIÓN Y PROGRESO
+   10. EVENTOS DE VALIDACIÓN Y TESTS EXTERNOS
+   ========================================================= */
+
+/* Agregar evaluador */
+document.getElementById('content').addEventListener('click', (e) => {
+  const btn = e.target.closest('#btnAddEvaluator');
+  if (btn) {
+    if (validationState.evaluators.length >= 4) return;
+    validationState.evaluators.push({ name: '', empathy: '', listening: '', leadership: '', organization: '', communication: '' });
+    renderEvaluators();
+    saveState();
+    return;
+  }
+
+  /* Omitir validación */
+  const btnOmit = e.target.closest('#btnOmitValidation');
+  if (btnOmit) {
+    if (confirm('¿Seguro que deseas omitir la validación externa? La confianza bajará ligeramente (5%), pero podrás compensarla agregando tests externos.')) {
+      validationState.omitted = true;
+      validationState.evaluators = [];
+      renderEvaluators();
+      saveState();
+      // Recalcular y actualizar confianza
+      if (lastResults) {
+        const conf = computeConfidence(lastResults);
+        confidenceData = conf;
+        // Actualizar visualización (recargar resultados)
+        renderStep();
+      }
+    }
+    return;
+  }
+
+  /* Eliminar evaluador */
+  const removeEval = e.target.closest('[data-remove-eval]');
+  if (removeEval) {
+    const idx = Number(removeEval.getAttribute('data-remove-eval'));
+    validationState.evaluators.splice(idx, 1);
+    renderEvaluators();
+    saveState();
+    return;
+  }
+
+  /* Agregar test externo */
+  const btnAddExt = e.target.closest('#btnAddExtTest');
+  if (btnAddExt) {
+    const type = document.getElementById('extTestType').value;
+    const name = document.getElementById('extTestName').value.trim();
+    const score = parseFloat(document.getElementById('extTestScore').value);
+
+    if (!type) {
+      alert('Selecciona un tipo de test.');
+      return;
+    }
+    if (type === 'Otro' && !name) {
+      alert('Especifica el nombre del test.');
+      return;
+    }
+    if (isNaN(score) || score < 0 || score > 10) {
+      alert('Ingresa un puntaje válido entre 0 y 10.');
+      return;
+    }
+
+    validationState.externalTests.push({
+      type,
+      name: type === 'Otro' ? name : type,
+      score,
+      weight: null // Usar peso por defecto
+    });
+
+    // Limpiar campos
+    document.getElementById('extTestType').value = '';
+    document.getElementById('extTestName').value = '';
+    document.getElementById('extTestScore').value = '';
+
+    renderExternalTests();
+    saveState();
+
+    // Recalcular confianza
+    if (lastResults) {
+      const conf = computeConfidence(lastResults);
+      confidenceData = conf;
+      renderStep(); // Recargar resultados para actualizar medidor
+    }
+    return;
+  }
+
+  /* Eliminar test externo */
+  const removeExt = e.target.closest('[data-remove-ext]');
+  if (removeExt) {
+    const idx = Number(removeExt.getAttribute('data-remove-ext'));
+    validationState.externalTests.splice(idx, 1);
+    renderExternalTests();
+    saveState();
+    if (lastResults) {
+      const conf = computeConfidence(lastResults);
+      confidenceData = conf;
+      renderStep();
+    }
+    return;
+  }
+
+  /* Exportar informe */
+  const btnExport = e.target.closest('#btnExportReport');
+  if (btnExport) {
+    const report = {
+      fecha: new Date().toISOString(),
+      resultados: lastResults,
+      confianza: confidenceData,
+      validacion360: {
+        omitida: validationState.omitted,
+        evaluadores: validationState.evaluators
+      },
+      testsExternos: validationState.externalTests,
+      respuestas: {
+        modulo1: state.m1,
+        modulo2: state.m2,
+        modulo3: state.m3,
+        modulo4: state.m4
+      }
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `informe_vocacional_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return;
+  }
+});
+
+/* Actualizar evaluadores al escribir */
+document.getElementById('content').addEventListener('input', (e) => {
+  // Campos de evaluadores
+  const nameInput = e.target.closest('[data-eval-name]');
+  if (nameInput) {
+    const idx = Number(nameInput.getAttribute('data-eval-name'));
+    validationState.evaluators[idx].name = nameInput.value;
+    saveState();
+    return;
+  }
+
+  const skillInput = e.target.closest('[data-eval-skill]');
+  if (skillInput) {
+    const idx = Number(skillInput.getAttribute('data-eval-idx'));
+    const skill = skillInput.getAttribute('data-eval-skill');
+    validationState.evaluators[idx][skill] = skillInput.value;
+    saveState();
+    return;
+  }
+
+  // Campos de texto del módulo 4 (original)
+  const t = e.target.closest('[data-m4]');
+  if (t) {
+    const field = t.getAttribute('data-m4');
+    state.m4[field] = t.value;
+    const card = document.getElementById(`card-m4-${field}`);
+    if (card) card.classList.remove('missing-card');
+    saveState();
+  }
+});
+
+/* =========================================================
+   11. NAVEGACIÓN Y PROGRESO
    ========================================================= */
 const STEP_NAMES = {
   1: 'Intereses y Personalidad',
@@ -1034,7 +1502,11 @@ function renderStep() {
     content.innerHTML = renderModule4();
   } else {
     content.innerHTML = renderResults();
-    requestAnimationFrame(() => createRadarChart());
+    requestAnimationFrame(() => {
+      createRadarChart();
+      renderEvaluators();
+      renderExternalTests();
+    });
   }
 
   content.classList.remove('fade-in');
@@ -1047,13 +1519,62 @@ function renderStep() {
 }
 
 /* =========================================================
-   10. EVENTOS
+   12. VALIDACIÓN
+   ========================================================= */
+function markMissing(prefix, ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(`${prefix}-${id}`);
+    if (el) el.classList.add('missing-card');
+  });
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    const missing = M1.filter(q => !state.m1[q.id]).map(q => q.id);
+    if (missing.length) {
+      markMissing('card-m1', missing);
+      showAlert(`Faltan ${missing.length} afirmación(es) por responder en el Módulo 1. Debes responder las 28 para continuar.`);
+      return false;
+    }
+  }
+  if (step === 2) {
+    const missing = M2.filter(q => !state.m2[q.id]).map(q => q.id);
+    if (missing.length) {
+      markMissing('card-m2', missing);
+      showAlert(`Faltan ${missing.length} competencia(s) por autoevaluar en el Módulo 2. Debes responder las 10 para continuar.`);
+      return false;
+    }
+  }
+  if (step === 3) {
+    const missing = M3.filter(q => state.m3[q.id] === undefined).map(q => q.id);
+    if (missing.length) {
+      markMissing('card-m3', missing);
+      showAlert(`Faltan ${missing.length} pregunta(s) por responder en el Módulo 3.`);
+      return false;
+    }
+  }
+  if (step === 4) {
+    const faltantes = [];
+    if (!state.m4.f1.trim() || state.m4.f1.trim().length < 5) faltantes.push('f1');
+    if (!state.m4.f2.trim() || state.m4.f2.trim().length < 5) faltantes.push('f2');
+    if (faltantes.length) {
+      markMissing('card-m4', faltantes);
+      showAlert('Debes completar ambos ejercicios proyectivos (mínimo 5 caracteres cada uno) antes de generar el reporte.');
+      return false;
+    }
+  }
+  return true;
+}
+
+/* =========================================================
+   13. INICIALIZACIÓN
    ========================================================= */
 document.getElementById('btnNext').addEventListener('click', () => {
   if (!validateStep(currentStep)) return;
   if (currentStep < 5) {
     currentStep++;
     renderStep();
+    if (currentStep === 5) saveState();
   }
 });
 
@@ -1064,6 +1585,7 @@ document.getElementById('btnPrev').addEventListener('click', () => {
   }
 });
 
+/* Delegación de eventos para botones de test originales */
 document.getElementById('content').addEventListener('click', (e) => {
   const b1 = e.target.closest('[data-m1]');
   if (b1) {
@@ -1118,35 +1640,33 @@ document.getElementById('content').addEventListener('click', (e) => {
   }
 });
 
-document.getElementById('content').addEventListener('input', (e) => {
-  const t = e.target.closest('[data-m4]');
-  if (t) {
-    const field = t.getAttribute('data-m4');
-    state.m4[field] = t.value;
-    const card = document.getElementById(`card-m4-${field}`);
-    if (card) card.classList.remove('missing-card');
-  }
-});
-
 function resetAll() {
   state.m1 = {};
   state.m2 = {};
   state.m3 = {};
   state.m4 = { f1: '', f2: '' };
+  validationState = { omitted: false, evaluators: [], externalTests: [] };
   lastResults = null;
+  confidenceData = null;
   if (chartInstance) {
     chartInstance.destroy();
     chartInstance = null;
   }
   currentStep = 1;
+  localStorage.removeItem('vocationalTestState');
   clearAlert();
   renderStep();
 }
 
-/* =========================================================
-   11. INICIALIZACIÓN
-   ========================================================= */
-renderStep();
+/* Cargar estado guardado al inicio */
+loadState();
+
+/* Si ya hay resultados guardados, ir directamente al paso 5 */
+if (currentStep === 5) {
+  renderStep();
+} else {
+  renderStep();
+}
 </script>
 </body>
 </html>
