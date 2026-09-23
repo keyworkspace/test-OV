@@ -23,7 +23,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -371,8 +370,9 @@
       <strong>Instrumento exploratorio, no un diagnóstico.</strong>
       El resultado no determina objetivamente si dos personas «pueden» o «no pueden»
       estar juntas. Convierte las preferencias declaradas en una puntuación para
-      facilitar la reflexión. Usa «No sé» cuando no tengas información suficiente:
-      ese criterio se excluirá del cálculo en lugar de penalizar.
+      facilitar la reflexión. Usa «No sé» cuando no tengas información suficiente
+      (por ejemplo, si solo lo has visto sin interactuar): ese criterio se excluirá
+      del cálculo en lugar de penalizar.
     </section>
 
     <form id="test">
@@ -383,63 +383,80 @@
           <span>Preferencias</span>
         </div>
 
-        <div class="criterion" data-factor="Físico" data-weight="10">
+        <div class="criterion" data-factor="Físico" data-weight="9">
           <p class="criterion-title">Atractivo general</p>
           <p class="question">¿Considera físicamente atractivo a este hombre?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q1" value="10"> Sí, claramente</label>
+            <label class="option"><input type="radio" name="q1" value="9"> Sí, claramente</label>
             <label class="option"><input type="radio" name="q1" value="5"> Algo</label>
             <label class="option"><input type="radio" name="q1" value="0"> No</label>
+            <label class="option"><input type="radio" name="q1" value="na"> No sé</label>
           </div>
         </div>
 
-        <div class="criterion" data-factor="Físico" data-weight="9">
+        <div class="criterion" data-factor="Físico" data-weight="10">
           <p class="criterion-title">Complexión corporal</p>
           <p class="question">¿Su complexión se aproxima al tipo de cuerpo que prefiere?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q2" value="9"> Sí</label>
-            <label class="option"><input type="radio" name="q2" value="4"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q2" value="10"> Sí</label>
+            <label class="option"><input type="radio" name="q2" value="5"> Parcialmente</label>
             <label class="option"><input type="radio" name="q2" value="0"> No</label>
+            <label class="option"><input type="radio" name="q2" value="na"> No sé</label>
+          </div>
+        </div>
+
+        <div class="criterion" data-factor="Físico" data-weight="10">
+          <p class="criterion-title">Glúteos</p>
+          <p class="question">¿La apariencia de sus glúteos coincide con una característica especialmente atractiva para el participante?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="10"> Sí</label>
+            <label class="option"><input type="radio" name="q3" value="5"> Algo</label>
+            <label class="option"><input type="radio" name="q3" value="0"> No</label>
+            <label class="option"><input type="radio" name="q3" value="na"> No sé</label>
           </div>
         </div>
 
         <div class="criterion" data-factor="Físico" data-weight="9">
-          <p class="criterion-title">Glúteos</p>
-          <p class="question">¿La apariencia de sus glúteos coincide con una característica especialmente atractiva para el participante?</p>
+          <p class="criterion-title">Color de piel</p>
+          <p class="question">¿Su tono de piel coincide con el que el participante encuentra atractivo?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q3" value="9"> Sí</label>
-            <label class="option"><input type="radio" name="q3" value="4"> Algo</label>
-            <label class="option"><input type="radio" name="q3" value="0"> No</label>
-          </div>
-        </div>
-
-        <div class="criterion" data-factor="Físico" data-weight="8">
-          <p class="criterion-title">Rostro</p>
-          <p class="question">¿Su rostro le resulta atractivo?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q4" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q4" value="4"> Moderadamente</label>
+            <label class="option"><input type="radio" name="q4" value="9"> Sí</label>
+            <label class="option"><input type="radio" name="q4" value="4"> Indiferente</label>
             <label class="option"><input type="radio" name="q4" value="0"> No</label>
+            <label class="option"><input type="radio" name="q4" value="na"> No sé</label>
           </div>
         </div>
 
         <div class="criterion" data-factor="Físico" data-weight="7">
-          <p class="criterion-title">Estatura</p>
-          <p class="question">¿Su estatura coincide con alguna de las que el participante considera atractivas?</p>
+          <p class="criterion-title">Rostro</p>
+          <p class="question">¿Su rostro le resulta atractivo?</p>
           <div class="options">
             <label class="option"><input type="radio" name="q5" value="7"> Sí</label>
-            <label class="option"><input type="radio" name="q5" value="3"> No es determinante</label>
+            <label class="option"><input type="radio" name="q5" value="4"> Moderadamente</label>
             <label class="option"><input type="radio" name="q5" value="0"> No</label>
+            <label class="option"><input type="radio" name="q5" value="na"> No sé</label>
           </div>
         </div>
 
-        <div class="criterion" data-factor="Físico" data-weight="5">
+        <div class="criterion" data-factor="Físico" data-weight="8">
+          <p class="criterion-title">Estatura</p>
+          <p class="question">¿Su estatura coincide con alguna de las que el participante considera atractivas?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q6" value="4"> No es determinante</label>
+            <label class="option"><input type="radio" name="q6" value="0"> No</label>
+            <label class="option"><input type="radio" name="q6" value="na"> No sé</label>
+          </div>
+        </div>
+
+        <div class="criterion" data-factor="Físico" data-weight="6">
           <p class="criterion-title">Cuidado personal</p>
           <p class="question">¿Mantiene un nivel de cuidado personal que le resulta atractivo?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q6" value="5"> Sí</label>
-            <label class="option"><input type="radio" name="q6" value="2"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q6" value="0"> No</label>
+            <label class="option"><input type="radio" name="q7" value="6"> Sí</label>
+            <label class="option"><input type="radio" name="q7" value="3"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q7" value="0"> No</label>
+            <label class="option"><input type="radio" name="q7" value="na"> No sé</label>
           </div>
         </div>
       </section>
@@ -454,9 +471,10 @@
           <p class="criterion-title">Sentido del humor</p>
           <p class="question">¿Comparte o comprende el sentido del humor del participante?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q7" value="10"> Mucho</label>
-            <label class="option"><input type="radio" name="q7" value="5"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q7" value="0"> Poco o nada</label>
+            <label class="option"><input type="radio" name="q8" value="10"> Mucho</label>
+            <label class="option"><input type="radio" name="q8" value="5"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q8" value="0"> Poco o nada</label>
+            <label class="option"><input type="radio" name="q8" value="na"> No sé</label>
           </div>
         </div>
 
@@ -464,9 +482,10 @@
           <p class="criterion-title">Inteligencia</p>
           <p class="question">¿Considera que existe una compatibilidad intelectual?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q8" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q8" value="4"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q8" value="0"> No</label>
+            <label class="option"><input type="radio" name="q9" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q9" value="4"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q9" value="0"> No</label>
+            <label class="option"><input type="radio" name="q9" value="na"> No sé</label>
           </div>
         </div>
 
@@ -474,19 +493,21 @@
           <p class="criterion-title">Empatía y escucha</p>
           <p class="question">¿Escucha, comprende y toma en consideración al participante?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q9" value="9"> Sí</label>
-            <label class="option"><input type="radio" name="q9" value="4"> A veces</label>
-            <label class="option"><input type="radio" name="q9" value="0"> No</label>
+            <label class="option"><input type="radio" name="q10" value="9"> Sí</label>
+            <label class="option"><input type="radio" name="q10" value="4"> A veces</label>
+            <label class="option"><input type="radio" name="q10" value="0"> No</label>
+            <label class="option"><input type="radio" name="q10" value="na"> No sé</label>
           </div>
         </div>
 
-        <div class="criterion" data-factor="Personalidad" data-weight="8">
+        <div class="criterion" data-factor="Personalidad" data-weight="7">
           <p class="criterion-title">Seguridad y confianza</p>
           <p class="question">¿Es una persona segura de sí misma y genera confianza?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q10" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q10" value="4"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q10" value="0"> No</label>
+            <label class="option"><input type="radio" name="q11" value="7"> Sí</label>
+            <label class="option"><input type="radio" name="q11" value="4"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q11" value="0"> No</label>
+            <label class="option"><input type="radio" name="q11" value="na"> No sé</label>
           </div>
         </div>
 
@@ -494,10 +515,10 @@
           <p class="criterion-title">Resiliencia</p>
           <p class="question">¿Muestra capacidad para afrontar dificultades y recuperarse de ellas?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q11" value="6"> Sí</label>
-            <label class="option"><input type="radio" name="q11" value="3"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q11" value="0"> No</label>
-            <label class="option"><input type="radio" name="q11" value="na"> No sé</label>
+            <label class="option"><input type="radio" name="q12" value="6"> Sí</label>
+            <label class="option"><input type="radio" name="q12" value="3"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q12" value="0"> No</label>
+            <label class="option"><input type="radio" name="q12" value="na"> No sé</label>
           </div>
         </div>
       </section>
@@ -512,30 +533,32 @@
           <p class="criterion-title">Reciprocidad</p>
           <p class="question">¿Demuestra interés de manera clara y equilibrada?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q12" value="10"> Sí, claramente</label>
-            <label class="option"><input type="radio" name="q12" value="5"> Irregularmente</label>
-            <label class="option"><input type="radio" name="q12" value="0"> No</label>
+            <label class="option"><input type="radio" name="q13" value="10"> Sí, claramente</label>
+            <label class="option"><input type="radio" name="q13" value="5"> Irregularmente</label>
+            <label class="option"><input type="radio" name="q13" value="0"> No</label>
+            <label class="option"><input type="radio" name="q13" value="na"> No sé</label>
+          </div>
+        </div>
+
+        <div class="criterion" data-factor="Vínculo" data-weight="10">
+          <p class="criterion-title">Química</p>
+          <p class="question">¿Existe una sensación fuerte de química entre ambos?</p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q14" value="10"> Sí</label>
+            <label class="option"><input type="radio" name="q14" value="5"> Moderada</label>
+            <label class="option"><input type="radio" name="q14" value="0"> No</label>
+            <label class="option"><input type="radio" name="q14" value="na"> No sé</label>
           </div>
         </div>
 
         <div class="criterion" data-factor="Vínculo" data-weight="9">
-          <p class="criterion-title">Química</p>
-          <p class="question">¿Existe una sensación fuerte de química entre ambos?</p>
-          <div class="options">
-            <label class="option"><input type="radio" name="q13" value="9"> Sí</label>
-            <label class="option"><input type="radio" name="q13" value="4"> Moderada</label>
-            <label class="option"><input type="radio" name="q13" value="0"> No</label>
-          </div>
-        </div>
-
-        <div class="criterion" data-factor="Vínculo" data-weight="8">
           <p class="criterion-title">Confianza e intimidad</p>
           <p class="question">¿Existe confianza suficiente para compartir aspectos personales y construir intimidad?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q14" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q14" value="4"> En desarrollo</label>
-            <label class="option"><input type="radio" name="q14" value="0"> No</label>
-            <label class="option"><input type="radio" name="q14" value="na"> No sé</label>
+            <label class="option"><input type="radio" name="q15" value="9"> Sí</label>
+            <label class="option"><input type="radio" name="q15" value="4"> En desarrollo</label>
+            <label class="option"><input type="radio" name="q15" value="0"> No</label>
+            <label class="option"><input type="radio" name="q15" value="na"> No sé</label>
           </div>
         </div>
 
@@ -543,9 +566,10 @@
           <p class="criterion-title">Afecto equilibrado</p>
           <p class="question">¿Es cariñoso sin resultar excesivamente empalagoso?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q15" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q15" value="4"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q15" value="0"> No</label>
+            <label class="option"><input type="radio" name="q16" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q16" value="4"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q16" value="0"> No</label>
+            <label class="option"><input type="radio" name="q16" value="na"> No sé</label>
           </div>
         </div>
 
@@ -553,10 +577,10 @@
           <p class="criterion-title">Apertura personal</p>
           <p class="question">¿Comparte cosas personales y permite construir un vínculo de confianza?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q16" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q16" value="4"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q16" value="0"> No</label>
-            <label class="option"><input type="radio" name="q16" value="na"> No sé</label>
+            <label class="option"><input type="radio" name="q17" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q17" value="4"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q17" value="0"> No</label>
+            <label class="option"><input type="radio" name="q17" value="na"> No sé</label>
           </div>
         </div>
       </section>
@@ -571,29 +595,32 @@
           <p class="criterion-title">Romanticismo</p>
           <p class="question">¿Demuestra romanticismo de una forma que resulta atractiva para el participante?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q17" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q17" value="4"> Moderadamente</label>
-            <label class="option"><input type="radio" name="q17" value="0"> No</label>
+            <label class="option"><input type="radio" name="q18" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q18" value="4"> Moderadamente</label>
+            <label class="option"><input type="radio" name="q18" value="0"> No</label>
+            <label class="option"><input type="radio" name="q18" value="na"> No sé</label>
           </div>
         </div>
 
-        <div class="criterion" data-factor="Sexualidad" data-weight="8">
+        <div class="criterion" data-factor="Sexualidad" data-weight="9">
           <p class="criterion-title">Atracción sexual</p>
           <p class="question">¿El participante experimenta deseo sexual hacia esta persona?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q18" value="8"> Sí</label>
-            <label class="option"><input type="radio" name="q18" value="4"> Moderado</label>
-            <label class="option"><input type="radio" name="q18" value="0"> No</label>
+            <label class="option"><input type="radio" name="q19" value="9"> Sí</label>
+            <label class="option"><input type="radio" name="q19" value="4"> Moderado</label>
+            <label class="option"><input type="radio" name="q19" value="0"> No</label>
+            <label class="option"><input type="radio" name="q19" value="na"> No sé</label>
           </div>
         </div>
 
-        <div class="criterion" data-factor="Romance" data-weight="7">
+        <div class="criterion" data-factor="Romance" data-weight="8">
           <p class="criterion-title">Proyecto de pareja</p>
           <p class="question">¿Puede imaginar una relación estable y una vida cotidiana compartida con esta persona?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q19" value="7"> Sí</label>
-            <label class="option"><input type="radio" name="q19" value="3"> Tal vez</label>
-            <label class="option"><input type="radio" name="q19" value="0"> No</label>
+            <label class="option"><input type="radio" name="q20" value="8"> Sí</label>
+            <label class="option"><input type="radio" name="q20" value="4"> Tal vez</label>
+            <label class="option"><input type="radio" name="q20" value="0"> No</label>
+            <label class="option"><input type="radio" name="q20" value="na"> No sé</label>
           </div>
         </div>
       </section>
@@ -608,10 +635,10 @@
           <p class="criterion-title">Habla negativamente a tus espaldas</p>
           <p class="question">¿La persona habla de forma perjudicial sobre el participante cuando él no está presente?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q20" value="-12"> Sí</label>
-            <label class="option"><input type="radio" name="q20" value="-5"> Hay indicios</label>
-            <label class="option"><input type="radio" name="q20" value="0"> No</label>
-            <label class="option"><input type="radio" name="q20" value="na"> No sé</label>
+            <label class="option"><input type="radio" name="q21" value="-12"> Sí</label>
+            <label class="option"><input type="radio" name="q21" value="-5"> Hay indicios</label>
+            <label class="option"><input type="radio" name="q21" value="0"> No</label>
+            <label class="option"><input type="radio" name="q21" value="na"> No sé</label>
           </div>
         </div>
 
@@ -619,9 +646,10 @@
           <p class="criterion-title">Desinterés</p>
           <p class="question">¿Muestra desinterés constante hacia el participante?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q21" value="-10"> Sí</label>
-            <label class="option"><input type="radio" name="q21" value="-4"> A veces</label>
-            <label class="option"><input type="radio" name="q21" value="0"> No</label>
+            <label class="option"><input type="radio" name="q22" value="-10"> Sí</label>
+            <label class="option"><input type="radio" name="q22" value="-4"> A veces</label>
+            <label class="option"><input type="radio" name="q22" value="0"> No</label>
+            <label class="option"><input type="radio" name="q22" value="na"> No sé</label>
           </div>
         </div>
 
@@ -629,10 +657,10 @@
           <p class="criterion-title">Entorno interpersonal problemático</p>
           <p class="question">¿Las personas con las que se relaciona generan una incompatibilidad importante para el participante?</p>
           <div class="options">
-            <label class="option"><input type="radio" name="q22" value="-8"> Sí</label>
-            <label class="option"><input type="radio" name="q22" value="-3"> Parcialmente</label>
-            <label class="option"><input type="radio" name="q22" value="0"> No</label>
-            <label class="option"><input type="radio" name="q22" value="na"> No sé</label>
+            <label class="option"><input type="radio" name="q23" value="-8"> Sí</label>
+            <label class="option"><input type="radio" name="q23" value="-3"> Parcialmente</label>
+            <label class="option"><input type="radio" name="q23" value="0"> No</label>
+            <label class="option"><input type="radio" name="q23" value="na"> No sé</label>
           </div>
         </div>
       </section>
@@ -658,7 +686,7 @@
       <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 
       <div class="result-meta">
-        <span>Respondidas: <strong id="answered">0/22</strong></span>
+        <span>Respondidas: <strong id="answered">0/23</strong></span>
         <span>Estado: <strong id="status">Pendiente</strong></span>
       </div>
 
@@ -690,7 +718,7 @@
     <span class="mb-label" id="mbStatus">Pendiente</span>
   </div>
   <div class="mb-right">
-    <span id="mbAnswered">0/22</span>
+    <span id="mbAnswered">0/23</span>
     <svg class="mb-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M18 15l-6-6-6 6"/>
     </svg>
@@ -700,7 +728,7 @@
 <script>
   const criteria = [...document.querySelectorAll('.criterion')];
   const TOTAL = criteria.length;
-  const CIRC = 2 * Math.PI * 52; // circunferencia del anillo
+  const CIRC = 2 * Math.PI * 52;
 
   const els = {
     score: document.getElementById('score'),
@@ -731,10 +759,12 @@
       if (!factors[f]) factors[f] = { score: 0, maxPos: 0, maxNeg: 0 };
 
       if (!sel) {
-        // Sin responder: las de peso positivo cuentan como potenciales (peor caso)
         if (w > 0) {
           maxPos += w;
           factors[f].maxPos += w;
+        } else {
+          maxNeg += Math.abs(w);
+          factors[f].maxNeg += Math.abs(w);
         }
         return;
       }
@@ -742,7 +772,7 @@
       answered++;
       const raw = sel.value;
 
-      // "No sé" → se excluye del cálculo (ni suma ni resta, ni cuenta en el máximo)
+      // "No sé" → se excluye del cálculo (no suma, no resta, no cuenta en el máximo)
       if (raw === 'na') return;
 
       const v = Number(raw);
@@ -762,25 +792,21 @@
     const rawScore = denom > 0 ? ((scoreSum + maxNeg) / denom) * 100 : 0;
     const score = Math.max(0, Math.min(100, rawScore));
 
-    // ====== Anillo y número ======
     const displayScore = answered === 0 ? '—' : Math.round(score) + '%';
     els.score.textContent = displayScore;
     els.mbScore.textContent = displayScore;
     els.ringFg.style.strokeDashoffset = CIRC * (1 - score / 100);
 
-    // ====== Color del anillo ======
     els.ringFg.classList.remove('good', 'mid', 'low');
     if (answered === 0) els.ringFg.classList.add('mid');
     else if (score >= 75) els.ringFg.classList.add('good');
     else if (score >= 50) els.ringFg.classList.add('mid');
     else els.ringFg.classList.add('low');
 
-    // ====== Progreso ======
     els.answered.textContent = answered + '/' + TOTAL;
     els.mbAnswered.textContent = answered + '/' + TOTAL;
     els.progressBar.style.width = (answered / TOTAL) * 100 + '%';
 
-    // ====== Veredicto ======
     let statusText, verdictClass, verdictText;
 
     if (answered === 0) {
@@ -810,7 +836,6 @@
     els.verdict.className = verdictClass;
     els.verdict.textContent = verdictText;
 
-    // ====== Factores ======
     const factorList = Object.entries(factors)
       .map(([name, d]) => {
         const den = d.maxPos + d.maxNeg;
@@ -818,7 +843,7 @@
         if (den > 0) {
           norm = ((d.score + d.maxNeg) / den) * 100;
         } else {
-          norm = 100; // sin criterios evaluables → sin penalización
+          norm = 100;
         }
         norm = Math.max(0, Math.min(100, norm));
         return { name, score: norm };
@@ -853,7 +878,6 @@
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  // Estado inicial
   evaluateTest();
 </script>
 
