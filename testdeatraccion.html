@@ -23,10 +23,8 @@
       --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.05);
       --shadow-md: 0 2px 6px rgba(15,23,42,.05), 0 12px 32px rgba(15,23,42,.08);
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -35,7 +33,6 @@
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
     }
-
     header {
       background: linear-gradient(135deg, #1e3a5f 0%, #2b5583 60%, #3b82f6 140%);
       color: #fff;
@@ -45,8 +42,7 @@
     }
     header::after {
       content: "";
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
         radial-gradient(600px 200px at 90% 10%, rgba(255,255,255,.12), transparent 70%),
         radial-gradient(400px 200px at 10% 90%, rgba(255,255,255,.08), transparent 70%);
@@ -57,22 +53,14 @@
     h1 { margin: 0; font-size: clamp(1.9rem, 4.4vw, 3rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
 
     main {
-      max-width: 1280px;
-      margin: 0 auto;
+      max-width: 1280px; margin: 0 auto;
       padding: 28px 24px 60px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 24px;
-      align-items: start;
+      gap: 24px; align-items: start;
     }
-
     .test-column { min-width: 0; }
-
-    .results-column {
-      position: sticky;
-      top: 20px;
-      align-self: start;
-    }
+    .results-column { position: sticky; top: 20px; align-self: start; }
 
     .notice {
       background: linear-gradient(180deg, #eef4ff, #e3edff);
@@ -96,25 +84,28 @@
     }
 
     .section-title {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
+      display: flex; justify-content: space-between; gap: 16px;
       align-items: baseline;
       border-bottom: 1px solid var(--line-soft);
-      padding-bottom: 12px;
-      margin-bottom: 4px;
+      padding-bottom: 12px; margin-bottom: 4px;
     }
     .section-title h2 { font-size: 1.12rem; margin: 0; letter-spacing: -.01em; }
-    .section-title span { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+    .section-title span {
+      color: var(--muted); font-size: .82rem;
+      text-transform: uppercase; letter-spacing: .06em; font-weight: 600;
+    }
 
     .criterion {
       padding: 16px 0;
       border-bottom: 1px solid var(--line-soft);
-      transition: background .3s ease, opacity .3s ease;
+      transition: background .35s ease, opacity .35s ease, transform .35s ease;
     }
     .criterion:last-child { border-bottom: 0; padding-bottom: 4px; }
 
-    .criterion-title { margin: 0 0 4px; font-weight: 700; font-size: .98rem; display: flex; align-items: center; gap: 6px; }
+    .criterion-title {
+      margin: 0 0 4px; font-weight: 700; font-size: .98rem;
+      display: flex; align-items: center; gap: 6px;
+    }
     .question { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
 
     .options {
@@ -122,26 +113,17 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
     }
-
     label.option {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      display: flex; gap: 10px; align-items: flex-start;
       padding: 10px 12px;
       border: 1px solid var(--line);
-      border-radius: 10px;
-      cursor: pointer;
-      background: #fff;
-      font-size: .92rem;
+      border-radius: 10px; cursor: pointer;
+      background: #fff; font-size: .92rem;
       transition: border-color .15s ease, background .15s ease, transform .08s ease;
     }
     label.option:hover { border-color: #9eb0c4; background: #fafcff; }
     label.option:active { transform: scale(.995); }
-    label.option input {
-      margin-top: 4px;
-      accent-color: var(--accent-2);
-      flex-shrink: 0;
-    }
+    label.option input { margin-top: 4px; accent-color: var(--accent-2); flex-shrink: 0; }
     label.option:has(input:checked) {
       border-color: var(--accent-2);
       background: var(--accent-soft);
@@ -149,28 +131,30 @@
     }
     label.option:has(input[value="na"]) { border-style: dashed; color: var(--muted); }
     label.option:has(input[value="na"]:checked) {
-      background: #f1f5f9;
-      border-color: #94a3b8;
+      background: #f1f5f9; border-color: #94a3b8;
       box-shadow: 0 0 0 3px rgba(100,116,139,.12);
       color: var(--text);
     }
 
-    /* ===== Criterio bloqueado por coherencia clínica ===== */
+    /* Criterio bloqueado por inferencia clínica */
     .criterion.is-locked {
       background: var(--lock-bg);
       border-radius: 12px;
-      padding: 16px 16px 14px;
+      padding: 14px 16px 12px;
       margin: 8px -16px;
       border-bottom: 0;
+      animation: lockIn .35s ease;
+    }
+    @keyframes lockIn {
+      0% { opacity: .5; transform: translateY(-3px); }
+      100% { opacity: 1; transform: none; }
     }
     .criterion.is-locked + .criterion:not(.is-locked) { border-top: 1px solid var(--line-soft); }
     .criterion.is-locked .criterion-title::before {
       content: "";
       width: 14px; height: 14px;
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='11' rx='2' ry='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
-      background-size: contain;
-      background-repeat: no-repeat;
-      flex-shrink: 0;
+      background-size: contain; background-repeat: no-repeat; flex-shrink: 0;
       opacity: .8;
     }
     .criterion.is-locked .question { color: #94a3b8; }
@@ -178,68 +162,49 @@
     .criterion.is-locked input { cursor: not-allowed; }
     .criterion.is-locked label.option { cursor: not-allowed; background: #fff; }
     .criterion.is-locked label.option:has(input:checked) {
-      background: #e2e8f0;
-      border-color: #94a3b8;
-      box-shadow: none;
+      background: #e2e8f0; border-color: #94a3b8; box-shadow: none;
     }
     .lock-note {
-      font-size: .82rem;
-      color: #334155;
+      font-size: .81rem; color: #334155;
       background: #eef2f7;
-      padding: 9px 12px;
-      border-radius: 8px;
+      padding: 9px 12px; border-radius: 8px;
       margin-top: 10px;
       border-left: 3px solid #64748b;
       line-height: 1.45;
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
+      display: flex; gap: 8px; align-items: flex-start;
     }
     .lock-note::before {
-      content: "🧠";
-      flex-shrink: 0;
-      font-size: .95rem;
-      line-height: 1.3;
+      content: "🧠"; flex-shrink: 0; font-size: .95rem; line-height: 1.3;
     }
 
-    /* ===== Panel de resultados ===== */
+    /* Panel de resultados */
     .result { padding: 22px; box-shadow: var(--shadow-md); }
-    .result h2 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -.01em; }
-    .result h3 { margin: 18px 0 10px; font-size: .88rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .result h2 { margin: 0 0 6px; font-size: 1.05rem; }
+    .result h3 {
+      margin: 18px 0 10px; font-size: .88rem;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    }
 
     .toxic-banner {
       display: none;
       background: linear-gradient(180deg, #fef2f2, #fee2e2);
-      border: 1px solid #fca5a5;
-      color: #991b1b;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: .85rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      line-height: 1.45;
-      align-items: flex-start;
-      gap: 10px;
+      border: 1px solid #fca5a5; color: #991b1b;
+      padding: 12px 14px; border-radius: 10px;
+      font-size: .85rem; font-weight: 600;
+      margin-bottom: 12px; line-height: 1.45;
+      align-items: flex-start; gap: 10px;
     }
-    .toxic-banner.show { display: flex; }
+    .toxic-banner.show { display: flex; animation: lockIn .4s ease; }
     .toxic-banner::before { content: "⚠️"; font-size: 1.1rem; flex-shrink: 0; }
 
-    .ring-wrap {
-      position: relative;
-      width: 168px;
-      height: 168px;
-      margin: 6px auto;
-    }
+    .ring-wrap { position: relative; width: 168px; height: 168px; margin: 6px auto; }
     .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
     .ring-bg { fill: none; stroke: #e8edf3; stroke-width: 9; }
     .ring-fg {
-      fill: none;
-      stroke: var(--accent-2);
-      stroke-width: 9;
+      fill: none; stroke: var(--accent-2); stroke-width: 9;
       stroke-linecap: round;
-      stroke-dasharray: 326.726;
-      stroke-dashoffset: 326.726;
-      transition: stroke-dashoffset .55s cubic-bezier(.4,0,.2,1), stroke .3s ease;
+      stroke-dasharray: 326.726; stroke-dashoffset: 326.726;
+      transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1), stroke .3s ease;
     }
     .ring-fg.good { stroke: var(--ok); }
     .ring-fg.mid  { stroke: var(--warn); }
@@ -259,6 +224,21 @@
       margin-top: 6px; font-weight: 600;
     }
 
+    .profile-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .78rem; font-weight: 700;
+      padding: 5px 12px; border-radius: 99px;
+      margin: 8px auto 4px;
+      text-transform: uppercase; letter-spacing: .06em;
+      transition: background .3s ease, color .3s ease;
+    }
+    .profile-badge.good { background: #d1fae5; color: #065f46; }
+    .profile-badge.mid  { background: #fef3c7; color: #92400e; }
+    .profile-badge.low  { background: #fee2e2; color: #991b1b; }
+    .profile-badge.toxic { background: #7f1d1d; color: #fff; }
+    .profile-badge.none { background: #e2e8f0; color: var(--muted); }
+    .profile-wrap { display: flex; justify-content: center; }
+
     .progress {
       height: 6px; background: var(--line-soft);
       border-radius: 99px; overflow: hidden;
@@ -270,19 +250,31 @@
       width: 0%; border-radius: inherit;
       transition: width .4s ease;
     }
-
     .result-meta {
       display: flex; justify-content: space-between;
       font-size: .82rem; color: var(--muted);
-      margin-bottom: 14px;
+      margin-bottom: 6px;
     }
     .result-meta strong { color: var(--text); font-weight: 700; }
+
+    .certainty {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .78rem; color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .certainty-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-2);
+      transition: background .3s ease;
+    }
+    .certainty-dot.low { background: var(--bad); }
+    .certainty-dot.mid { background: var(--warn); }
+    .certainty-dot.high { background: var(--ok); }
 
     .verdict {
       border-radius: 12px;
       padding: 14px 16px;
-      font-size: .9rem;
-      font-weight: 500;
+      font-size: .9rem; font-weight: 500;
       line-height: 1.45;
       transition: background .25s ease, color .25s ease;
     }
@@ -291,8 +283,7 @@
     .verdict.low  { background: #fdeaea; color: var(--bad); }
     .verdict.toxic {
       background: linear-gradient(180deg, #fee2e2, #fecaca);
-      color: #7f1d1d;
-      font-weight: 600;
+      color: #7f1d1d; font-weight: 600;
     }
 
     .factors { display: grid; gap: 9px; margin-top: 4px; }
@@ -303,8 +294,10 @@
       font-size: .82rem;
     }
     .factor-name { font-weight: 600; }
-    .factor-value { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
-
+    .factor-value {
+      text-align: right; color: var(--muted);
+      font-variant-numeric: tabular-nums; font-weight: 600;
+    }
     .bar { height: 8px; background: var(--line-soft); border-radius: 99px; overflow: hidden; }
     .bar span {
       display: block; height: 100%; width: 0%;
@@ -337,11 +330,9 @@
       left: 12px; right: 12px; bottom: 12px;
       z-index: 60;
       background: rgba(255,255,255,.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 16px;
+      border-radius: 14px; padding: 12px 16px;
       align-items: center; justify-content: space-between;
       gap: 12px;
       box-shadow: 0 10px 30px rgba(15,23,42,.15);
@@ -350,8 +341,15 @@
     .mobile-bar:hover { background: #fff; }
     .mb-left { display: flex; flex-direction: column; align-items: flex-start; }
     .mb-score { font-size: 1.25rem; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
-    .mb-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; font-weight: 600; }
-    .mb-right { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .85rem; font-weight: 600; }
+    .mb-label {
+      font-size: .72rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-top: 4px; font-weight: 600;
+    }
+    .mb-right {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: .85rem; font-weight: 600;
+    }
     .mb-chevron { color: var(--accent-2); }
 
     @media (max-width: 980px) {
@@ -360,7 +358,6 @@
       .mobile-bar { display: flex; }
       body { padding-bottom: 84px; }
     }
-
     @media (max-width: 680px) {
       main { padding: 18px 14px 40px; }
       .options { grid-template-columns: 1fr; }
@@ -394,7 +391,8 @@
       Las respuestas están <em>encadenadas con criterio clínico</em>: cuando una respuesta
       raíz cierra una puerta, las preguntas dependientes se ajustan automáticamente y se
       bloquean con una nota explicativa. Usa <em>«No sé»</em> cuando no tengas información
-      suficiente: ese criterio se excluye del cálculo en lugar de penalizar.
+      suficiente (por ejemplo, si solo lo has visto sin interactuar): ese criterio se
+      excluye del cálculo y aumenta la incertidumbre del resultado.
     </section>
 
     <form id="test">
@@ -695,7 +693,7 @@
       <h2>Resultado</h2>
 
       <div id="toxicBanner" class="toxic-banner">
-        Se ha detectado una conducta descrita por el participante como catastrófica.
+        Se ha detectado una conducta que el propio participante describió como catastrófica.
         Su poder invalidante topa la puntuación global.
       </div>
 
@@ -710,11 +708,20 @@
         </div>
       </div>
 
+      <div class="profile-wrap">
+        <span class="profile-badge none" id="profileBadge">Sin evaluar</span>
+      </div>
+
       <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 
       <div class="result-meta">
         <span>Respondidas: <strong id="answered">0/23</strong></span>
         <span>Estado: <strong id="status">Pendiente</strong></span>
+      </div>
+
+      <div class="certainty">
+        <span class="certainty-dot" id="certaintyDot"></span>
+        <span id="certaintyText">Certeza del resultado: pendiente</span>
       </div>
 
       <div id="verdict" class="verdict mid">
@@ -755,73 +762,77 @@
 
 <script>
   /* ============================================================
-     CADENAS CLÍNICAS DE COHERENCIA
-     Cuando una respuesta raíz cierra una puerta, las preguntas
-     dependientes se auto-resuelven y se bloquean, mostrando la
-     razón psicológica del bloqueo.
+     CADENAS DE INFERENCIA CLÍNICA
+     Cada cadena: cuando la pregunta raíz toma ciertos valores,
+     las preguntas dependientes quedan bloqueadas con una
+     explicación del razonamiento.
      ============================================================ */
-  const CHAINS = {
-    // Si no hay atracción física básica, el detalle físico pierde relevancia clínica.
-    'q1': {
-      children: ['q2','q3','q4','q5','q6','q7'],
-      rules: {
-        '0': {
-          value: '0',
-          msg: 'Sin atracción física global declarada, los atributos específicos pierden relevancia clínica. Se ajustan a «No».'
-        },
-        'na': {
-          value: 'na',
-          msg: 'Sin información sobre el atractivo general, los detalles físicos no son evaluables. Se marcan como «No sé».'
-        }
-      }
+  const CHAINS = [
+    // 1. Sin atracción física global, los detalles físicos pierden base.
+    {
+      trigger: { q: 'q1', values: ['0'] },
+      targets: ['q2','q3','q4','q5','q6','q7'],
+      forcedValue: '0',
+      reason: 'Sin atracción física global declarada, ningún atributo específico puede compensarla. Los detalles se anulan.'
     },
-    // Sin reciprocidad no hay base para construir vínculo.
-    'q13': {
-      children: ['q14','q15','q16','q17'],
-      rules: {
-        '0': {
-          value: '0',
-          msg: 'Sin reciprocidad percibida no existe base relacional para que surjan química, intimidad, afecto equilibrado ni apertura personal. Se bloquean a «No».'
-        },
-        'na': {
-          value: 'na',
-          msg: 'Sin información sobre reciprocidad, el vínculo afectivo no es evaluable. Se marcan como «No sé».'
-        }
-      }
+    {
+      trigger: { q: 'q1', values: ['na'] },
+      targets: ['q2','q3','q4','q5','q6','q7'],
+      forcedValue: 'na',
+      reason: 'Sin información sobre el atractivo general, los detalles físicos no son evaluables.'
     },
-    // Sin química, el deseo sexual es altamente improbable.
-    'q14': {
-      children: ['q19'],
-      rules: {
-        '0': {
-          value: '0',
-          msg: 'La química interpersonal es el precursor habitual del deseo sexual. Sin ella, la atracción sexual se bloquea a «No».'
-        },
-        'na': {
-          value: 'na',
-          msg: 'Sin información sobre la química, la atracción sexual no es evaluable. Se marca como «No sé».'
-        }
-      }
+
+    // 2. Conducta tóxica → colapso de la base relacional.
+    {
+      trigger: { q: 'q21', values: ['-12'] },
+      targets: ['q10','q13'],
+      forcedValue: '0',
+      reason: 'Una persona que habla mal de ti a tus espaldas no puede ser genuinamente empática ni recíproca.'
     },
-    // Sin atracción sexual, el proyecto de pareja pierde uno de sus pilares.
-    'q19': {
-      children: ['q20'],
-      rules: {
-        '0': {
-          value: '0',
-          msg: 'El proyecto de vida compartida requiere atracción sexual sostenida. Sin ella, se bloquea a «No».'
-        },
-        'na': {
-          value: 'na',
-          msg: 'Sin información sobre atracción sexual, el proyecto de pareja no es evaluable. Se marca como «No sé».'
-        }
-      }
+
+    // 3. Desinterés constante → sin reciprocidad.
+    {
+      trigger: { q: 'q22', values: ['-10'] },
+      targets: ['q13'],
+      forcedValue: '0',
+      reason: 'El desinterés constante es incompatible con la reciprocidad.'
+    },
+
+    // 4. Sin reciprocidad → el vínculo afectivo se desmorona.
+    {
+      trigger: { q: 'q13', values: ['0'] },
+      targets: ['q14','q15','q16','q17'],
+      forcedValue: '0',
+      reason: 'Sin reciprocidad no hay base para que exista química mutua, intimidad, afecto equilibrado ni apertura personal.'
+    },
+    {
+      trigger: { q: 'q13', values: ['na'] },
+      targets: ['q14','q15','q16','q17'],
+      forcedValue: 'na',
+      reason: 'Sin información sobre reciprocidad, el vínculo afectivo no es evaluable.'
+    },
+
+    // 5. Sin atracción sexual → el proyecto de pareja pierde sustento.
+    {
+      trigger: { q: 'q19', values: ['0'] },
+      targets: ['q20'],
+      forcedValue: '0',
+      reason: 'El proyecto de vida en común requiere deseo sexual sostenido según las preferencias declaradas.'
+    },
+    {
+      trigger: { q: 'q19', values: ['na'] },
+      targets: ['q20'],
+      forcedValue: 'na',
+      reason: 'Sin información sobre atracción sexual, el proyecto de pareja no es evaluable.'
     }
-  };
+  ];
 
   const criteria = [...document.querySelectorAll('.criterion')];
   const TOTAL = criteria.length;
   const CIRC = 2 * Math.PI * 52;
+
+  // Almacén de respuestas del usuario (las automáticas no cuentan como "suyas")
+  const userValues = {};
 
   const els = {
     score: document.getElementById('score'),
@@ -836,68 +847,77 @@
     mbAnswered: document.getElementById('mbAnswered'),
     mobileBar: document.getElementById('mobileBar'),
     toxicBanner: document.getElementById('toxicBanner'),
+    profileBadge: document.getElementById('profileBadge'),
+    certaintyDot: document.getElementById('certaintyDot'),
+    certaintyText: document.getElementById('certaintyText'),
   };
 
   /* ============================================================
-     RESOLUCIÓN DE CADENAS LÓGICAS
+     RESOLUCIÓN ITERATIVA DE CADENAS
+     Las cadenas pueden encadenarse entre sí (una cadena que
+     bloquea q13 puede a su vez disparar la cadena de q13), por
+     eso se itera hasta que no haya cambios.
      ============================================================ */
   function resolveChains() {
-    // 1. Calcular todos los bloqueos activos
-    const locks = {}; // qName -> { value, msg }
-    for (const [parentQ, chain] of Object.entries(CHAINS)) {
-      const parentInput = document.querySelector(`input[name="${parentQ}"]:checked`);
-      if (!parentInput) continue;
-      const rule = chain.rules[parentInput.value];
-      if (!rule) continue;
-      chain.children.forEach(child => {
-        locks[child] = { value: rule.value, msg: rule.msg };
-      });
+    // Partimos de los valores puros del usuario.
+    const locks = {}; // qName -> { value, reason }
+
+    let changed = true;
+    let safety = 0;
+
+    while (changed && safety < 30) {
+      changed = false;
+      safety++;
+
+      for (const chain of CHAINS) {
+        // El valor efectivo del trigger es: el lock aplicado, o el valor del usuario.
+        const triggerVal = (chain.trigger.q in locks)
+          ? locks[chain.trigger.q].value
+          : userValues[chain.trigger.q];
+
+        if (!triggerVal || !chain.trigger.values.includes(triggerVal)) continue;
+
+        for (const t of chain.targets) {
+          const current = locks[t];
+          if (current && current.value === chain.forcedValue) continue;
+          locks[t] = { value: chain.forcedValue, reason: chain.reason };
+          changed = true;
+        }
+      }
     }
 
-    // 2. Aplicar/quitar bloqueos
+    // Aplicar al DOM
     criteria.forEach(c => {
-      const qName = c.dataset.qname;
+      const q = c.dataset.qname;
       const inputs = c.querySelectorAll('input');
-      const isLocked = !!locks[qName];
 
-      if (isLocked) {
-        const { value, msg } = locks[qName];
+      if (q in locks) {
+        const { value, reason } = locks[q];
 
-        // Deshabilitar
-        inputs.forEach(inp => { inp.disabled = true; });
-
-        // Limpiar selección previa manual y fijar el valor automático
-        let target = null;
         inputs.forEach(inp => {
-          if (inp.checked && inp.dataset.autoset !== 'true') {
-            inp.checked = false;
-          }
-          if (inp.value === value) target = inp;
+          inp.disabled = true;
+          inp.setAttribute('aria-disabled', 'true');
+          inp.checked = (inp.value === value);
         });
-        if (target) {
-          target.checked = true;
-          target.dataset.autoset = 'true';
-        }
 
         c.classList.add('is-locked');
 
-        // Nota clínica
         let note = c.querySelector('.lock-note');
         if (!note) {
           note = document.createElement('p');
           note.className = 'lock-note';
           c.appendChild(note);
         }
-        note.textContent = msg;
+        note.textContent = reason;
       } else {
-        // Habilitar
-        inputs.forEach(inp => { inp.disabled = false; });
-
-        // Si la selección actual fue impuesta por nosotros, la limpiamos
         inputs.forEach(inp => {
-          if (inp.dataset.autoset === 'true') {
+          inp.disabled = false;
+          inp.removeAttribute('aria-disabled');
+          // Restaurar valor del usuario si existe; si no, desmarcar
+          if (userValues[q]) {
+            inp.checked = (inp.value === userValues[q]);
+          } else {
             inp.checked = false;
-            delete inp.dataset.autoset;
           }
         });
 
@@ -910,12 +930,9 @@
 
   /* ============================================================
      DETECCIÓN DE TOXICIDAD
-     La entrevista describe esta conducta como catastrófica:
-     tiene poder invalidante sobre cualquier compatibilidad positiva.
      ============================================================ */
   function isToxic() {
-    const q21 = document.querySelector('input[name="q21"]:checked');
-    return q21 && q21.value === '-12';
+    return userValues['q21'] === '-12';
   }
 
   /* ============================================================
@@ -923,6 +940,7 @@
      ============================================================ */
   function evaluateTest() {
     let answered = 0;
+    let naCount = 0;
     let scoreSum = 0;
     let maxPos = 0;
     let maxNeg = 0;
@@ -944,7 +962,10 @@
       answered++;
       const raw = sel.value;
 
-      if (raw === 'na') return; // «No sé» se excluye del cálculo
+      if (raw === 'na') {
+        naCount++;
+        return; // excluido del cálculo
+      }
 
       const v = Number(raw);
       scoreSum += v;
@@ -959,7 +980,7 @@
     score = Math.max(0, Math.min(100, score));
 
     const toxic = isToxic();
-    if (toxic) score = Math.min(score, 30); // tope clínico
+    if (toxic) score = Math.min(score, 30);
 
     // ====== Anillo ======
     const displayScore = answered === 0 ? '—' : Math.round(score) + '%';
@@ -979,42 +1000,88 @@
     els.mbAnswered.textContent = answered + '/' + TOTAL;
     els.progressBar.style.width = (answered / TOTAL) * 100 + '%';
 
+    // ====== Certeza ======
+    const effective = answered - naCount;
+    const certaintyRatio = answered === 0 ? 0 : effective / answered;
+    let certaintyLabel, certaintyCls;
+    if (answered === 0) {
+      certaintyLabel = 'Certeza del resultado: pendiente';
+      certaintyCls = '';
+    } else if (certaintyRatio >= 0.8) {
+      certaintyLabel = `Certeza del resultado: alta (${effective}/${answered} criterios informados)`;
+      certaintyCls = 'high';
+    } else if (certaintyRatio >= 0.5) {
+      certaintyLabel = `Certeza del resultado: media (${effective}/${answered} criterios informados)`;
+      certaintyCls = 'mid';
+    } else {
+      certaintyLabel = `Certeza del resultado: baja (${effective}/${answered} criterios informados)`;
+      certaintyCls = 'low';
+    }
+    els.certaintyText.textContent = certaintyLabel;
+    els.certaintyDot.className = 'certainty-dot ' + certaintyCls;
+
     // ====== Banner toxicidad ======
     els.toxicBanner.classList.toggle('show', toxic);
 
-    // ====== Veredicto ======
-    let statusText, verdictClass, verdictText;
+    // ====== Veredicto y perfil ======
+    let statusText, verdictClass, verdictText, profileLabel, profileCls;
 
     if (toxic) {
       statusText = 'Alerta';
       verdictClass = 'verdict toxic';
       verdictText = 'Conducta invalidante detectada. Según la propia entrevista, este factor es catastrófico y desactiva cualquier compatibilidad positiva. La puntuación se ha topado deliberadamente.';
+      profileLabel = 'Alerta relacional';
+      profileCls = 'toxic';
     } else if (answered === 0) {
       statusText = 'Pendiente';
       verdictClass = 'verdict mid';
       verdictText = 'Selecciona las respuestas para obtener una lectura de compatibilidad.';
+      profileLabel = 'Sin evaluar';
+      profileCls = 'none';
     } else if (answered < TOTAL) {
       statusText = 'En curso';
       verdictClass = 'verdict mid';
       verdictText = 'Resultado provisional. Responde todos los criterios para obtener la evaluación completa.';
-    } else if (score >= 75) {
+      profileLabel = 'En construcción';
+      profileCls = 'mid';
+    } else if (score >= 80) {
+      statusText = 'Muy alta';
+      verdictClass = 'verdict good';
+      verdictText = 'Muy alta compatibilidad según las preferencias declaradas. El perfil reúne los factores que el participante considera indispensables.';
+      profileLabel = 'Pareja ideal';
+      profileCls = 'good';
+    } else if (score >= 65) {
       statusText = 'Alta';
       verdictClass = 'verdict good';
-      verdictText = 'Alta compatibilidad según las preferencias declaradas. El perfil reúne una proporción importante de los factores considerados atractivos.';
+      verdictText = 'Alta compatibilidad. La mayoría de los factores preferidos están presentes, con uno o dos aspectos que podrían afinarse.';
+      profileLabel = 'Alta compatibilidad';
+      profileCls = 'good';
     } else if (score >= 50) {
       statusText = 'Intermedia';
       verdictClass = 'verdict mid';
-      verdictText = 'Compatibilidad intermedia. Existen coincidencias relevantes, pero también factores que podrían requerir atención o conocerse mejor.';
+      verdictText = 'Compatibilidad intermedia. Hay coincidencias relevantes pero también factores que podrían requerir conocerse mejor.';
+      profileLabel = 'Conexión viable';
+      profileCls = 'mid';
+    } else if (score >= 35) {
+      statusText = 'Dudosa';
+      verdictClass = 'verdict mid';
+      verdictText = 'Compatibilidad dudosa. Varios factores relevantes no se alinean con las preferencias declaradas.';
+      profileLabel = 'Vínculo en duda';
+      profileCls = 'mid';
     } else {
       statusText = 'Baja';
       verdictClass = 'verdict low';
       verdictText = 'Baja compatibilidad según este modelo de preferencias. El resultado refleja las respuestas introducidas y no determina por sí mismo la viabilidad de una relación.';
+      profileLabel = 'Baja compatibilidad';
+      profileCls = 'low';
     }
 
     els.status.textContent = statusText;
     els.mbStatus.textContent = statusText;
     els.verdict.className = verdictClass;
     els.verdict.textContent = verdictText;
+    els.profileBadge.textContent = profileLabel;
+    els.profileBadge.className = 'profile-badge ' + profileCls;
 
     // ====== Factores ======
     const factorList = Object.entries(factors)
@@ -1042,20 +1109,30 @@
   }
 
   /* ============================================================
-     MANEJO DE EVENTOS
+     EVENTOS
      ============================================================ */
-  function handleChange() {
+  function handleUserChange(e) {
+    const input = e.target;
+    if (input.disabled) return;
+    const criterion = input.closest('.criterion');
+    if (!criterion) return;
+    const q = criterion.dataset.qname;
+    userValues[q] = input.value;
+
     resolveChains();
     evaluateTest();
   }
 
   function resetTest() {
-    document.getElementById('test').reset();
-    // Limpiar todos los autoset antes de reevaluar
+    // Limpiar estado del usuario
+    Object.keys(userValues).forEach(k => delete userValues[k]);
+    // Desmarcar todos los radios
     document.querySelectorAll('#test input').forEach(inp => {
-      delete inp.dataset.autoset;
+      inp.checked = false;
       inp.disabled = false;
+      inp.removeAttribute('aria-disabled');
     });
+    // Limpiar notas y clases de bloqueo
     document.querySelectorAll('.criterion').forEach(c => {
       c.classList.remove('is-locked');
       const note = c.querySelector('.lock-note');
@@ -1066,7 +1143,7 @@
   }
 
   document.querySelectorAll('#test input').forEach(input => {
-    input.addEventListener('change', handleChange);
+    input.addEventListener('change', handleUserChange);
   });
 
   els.mobileBar.addEventListener('click', () => {
