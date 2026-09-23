@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación de compatibilidad — El hombre ideal</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #65717d;
+      --line: #dce2e7;
+      --accent: #26384a;
+      --accent-soft: #e9eef3;
+      --ok: #216e4e;
+      --warn: #9a6700;
+      --bad: #a33a3a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 48px 20px 42px;
+    }
+
+    header .wrap,
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header p {
+      max-width: 720px;
+      color: #d9e1e8;
+      margin-bottom: 0;
+    }
+
+    h1, h2, h3 { line-height: 1.15; }
+    h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.4rem); }
+    h2 { margin-top: 0; }
+
+    main {
+      padding: 28px 20px 60px;
+    }
+
+    .notice, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .notice {
+      background: var(--accent-soft);
+      border-color: #ccd7e0;
+    }
+
+    .notice strong { display: block; margin-bottom: 5px; }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .criterion {
+      padding: 18px 0;
+      border-bottom: 1px solid #edf0f2;
+    }
+
+    .criterion:last-child { border-bottom: 0; }
+
+    .criterion-title {
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+
+    .weight {
+      display: inline-block;
+      margin-left: 6px;
+      font-size: .76rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .question {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label.option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      background: #fff;
+      transition: .15s ease;
+    }
+
+    label.option:hover {
+      border-color: #9eabb6;
+      background: #fafbfc;
+    }
+
+    label.option input {
+      margin-top: 4px;
+      accent-color: var(--accent);
+    }
+
+    .result {
+      position: sticky;
+      bottom: 14px;
+      z-index: 5;
+      background: rgba(255,255,255,.97);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 30px rgba(20,30,40,.12);
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fafbfc;
+    }
+
+    .metric .value {
+      display: block;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-top: 3px;
+    }
+
+    .verdict {
+      border-radius: 12px;
+      padding: 18px;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .verdict.good { background: #e9f5ef; color: var(--ok); }
+    .verdict.mid { background: #fff5dc; color: var(--warn); }
+    .verdict.low { background: #fbeaea; color: var(--bad); }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #e8edf1;
+      color: var(--text);
+      margin-left: 8px;
+    }
+
+    .factors {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .factor-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 55px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .bar {
+      height: 9px;
+      background: #e6ebef;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      border-radius: inherit;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: .87rem;
+    }
+
+    @media (max-width: 680px) {
+      .options, .score-grid { grid-template-columns: 1fr; }
+      .factor-row { grid-template-columns: 130px 1fr 45px; }
+      .result { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>¿Qué tan compatible es conmigo?</h1>
+    <p>
+      Instrumento exploratorio basado en las preferencias declaradas por el participante
+      del estudio «El hombre ideal». Evalúa a una persona concreta mediante criterios
+      físicos, psicológicos, afectivos, sexuales y relacionales.
+    </p>
+  </div>
+</header>
+
+<main>
+  <section class="notice">
+    <strong>Importante: esto es un instrumento exploratorio, no un diagnóstico.</strong>
+    El resultado no determina objetivamente si dos personas «pueden» o «no pueden»
+    estar juntas. Convierte las preferencias declaradas en una puntuación de
+    compatibilidad para facilitar la reflexión y comparar perfiles.
+  </section>
+
+  <form id="test">
+
+    <section class="card">
+      <div class="section-title">
+        <h2>1. Apariencia física</h2>
+        <span>Preferencias declaradas</span>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="10">
+        <p class="criterion-title">Atractivo general</p>
+        <p class="question">¿Considera físicamente atractivo a este hombre?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q1" value="10"> Sí, claramente</label>
+          <label class="option"><input type="radio" name="q1" value="5"> Algo</label>
+          <label class="option"><input type="radio" name="q1" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="9">
+        <p class="criterion-title">Complexión corporal</p>
+        <p class="question">¿Su complexión se aproxima al tipo de cuerpo que prefiere?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q2" value="9"> Sí</label>
+          <label class="option"><input type="radio" name="q2" value="4"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q2" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="9">
+        <p class="criterion-title">Glúteos</p>
+        <p class="question">¿La apariencia de sus glúteos coincide con una característica especialmente atractiva para el participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q3" value="9"> Sí</label>
+          <label class="option"><input type="radio" name="q3" value="4"> Algo</label>
+          <label class="option"><input type="radio" name="q3" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="8">
+        <p class="criterion-title">Rostro</p>
+        <p class="question">¿Su rostro le resulta atractivo?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q4" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q4" value="4"> Moderadamente</label>
+          <label class="option"><input type="radio" name="q4" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="7">
+        <p class="criterion-title">Estatura</p>
+        <p class="question">¿Su estatura coincide con alguna de las estaturas que el participante considera atractivas?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q5" value="7"> Sí</label>
+          <label class="option"><input type="radio" name="q5" value="3"> No es determinante</label>
+          <label class="option"><input type="radio" name="q5" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Físico" data-weight="5">
+        <p class="criterion-title">Cuidado personal</p>
+        <p class="question">¿Mantiene un nivel de cuidado personal que le resulta atractivo?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q6" value="5"> Sí</label>
+          <label class="option"><input type="radio" name="q6" value="2"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q6" value="0"> No</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <h2>2. Personalidad e interacción</h2>
+        <span>Compatibilidad psicológica declarada</span>
+      </div>
+
+      <div class="criterion" data-factor="Personalidad" data-weight="10">
+        <p class="criterion-title">Sentido del humor</p>
+        <p class="question">¿Comparte o comprende el sentido del humor del participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q7" value="10"> Mucho</label>
+          <label class="option"><input type="radio" name="q7" value="5"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q7" value="0"> Poco o nada</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Personalidad" data-weight="8">
+        <p class="criterion-title">Inteligencia</p>
+        <p class="question">¿Considera que existe una compatibilidad intelectual?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q8" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q8" value="4"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q8" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Personalidad" data-weight="9">
+        <p class="criterion-title">Empatía y escucha</p>
+        <p class="question">¿Escucha, comprende y toma en consideración al participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q9" value="9"> Sí</label>
+          <label class="option"><input type="radio" name="q9" value="4"> A veces</label>
+          <label class="option"><input type="radio" name="q9" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Personalidad" data-weight="8">
+        <p class="criterion-title">Seguridad y confianza</p>
+        <p class="question">¿Es una persona segura de sí misma y genera confianza?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q10" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q10" value="4"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q10" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Personalidad" data-weight="6">
+        <p class="criterion-title">Resiliencia</p>
+        <p class="question">¿Muestra capacidad para afrontar dificultades y recuperarse de ellas?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q11" value="6"> Sí</label>
+          <label class="option"><input type="radio" name="q11" value="3"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q11" value="0"> No</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <h2>3. Vínculo afectivo</h2>
+        <span>Factores relacionales</span>
+      </div>
+
+      <div class="criterion" data-factor="Vínculo" data-weight="10">
+        <p class="criterion-title">Reciprocidad</p>
+        <p class="question">¿Demuestra interés de manera clara y equilibrada?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q12" value="10"> Sí, claramente</label>
+          <label class="option"><input type="radio" name="q12" value="5"> Irregularmente</label>
+          <label class="option"><input type="radio" name="q12" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Vínculo" data-weight="9">
+        <p class="criterion-title">Química</p>
+        <p class="question">¿Existe una sensación fuerte de química entre ambos?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q13" value="9"> Sí</label>
+          <label class="option"><input type="radio" name="q13" value="4"> Moderada</label>
+          <label class="option"><input type="radio" name="q13" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Vínculo" data-weight="8">
+        <p class="criterion-title">Confianza e intimidad</p>
+        <p class="question">¿Existe confianza suficiente para compartir aspectos personales y construir intimidad?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q14" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q14" value="4"> En desarrollo</label>
+          <label class="option"><input type="radio" name="q14" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Vínculo" data-weight="8">
+        <p class="criterion-title">Afecto equilibrado</p>
+        <p class="question">¿Es cariñoso sin resultar excesivamente empalagoso?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q15" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q15" value="4"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q15" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Vínculo" data-weight="8">
+        <p class="criterion-title">Apertura personal</p>
+        <p class="question">¿Comparte cosas personales y permite construir un vínculo de confianza?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q16" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q16" value="4"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q16" value="0"> No</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <h2>4. Compatibilidad romántica y sexual</h2>
+        <span>Dimensiones declaradas</span>
+      </div>
+
+      <div class="criterion" data-factor="Romance" data-weight="8">
+        <p class="criterion-title">Romanticismo</p>
+        <p class="question">¿Demuestra romanticismo de una forma que resulta atractiva para el participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q17" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q17" value="4"> Moderadamente</label>
+          <label class="option"><input type="radio" name="q17" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Sexualidad" data-weight="8">
+        <p class="criterion-title">Atracción sexual</p>
+        <p class="question">¿El participante experimenta deseo sexual hacia esta persona?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q18" value="8"> Sí</label>
+          <label class="option"><input type="radio" name="q18" value="4"> Moderado</label>
+          <label class="option"><input type="radio" name="q18" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Romance" data-weight="7">
+        <p class="criterion-title">Proyecto de pareja</p>
+        <p class="question">¿Puede imaginar una relación estable y una vida cotidiana compartida con esta persona?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q19" value="7"> Sí</label>
+          <label class="option"><input type="radio" name="q19" value="3"> Tal vez</label>
+          <label class="option"><input type="radio" name="q19" value="0"> No</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <h2>5. Factores de incompatibilidad</h2>
+        <span>Estos factores restan puntos</span>
+      </div>
+
+      <div class="criterion" data-factor="Incompatibilidad" data-weight="12">
+        <p class="criterion-title">Habla negativamente a tus espaldas</p>
+        <p class="question">¿La persona habla de forma perjudicial sobre el participante cuando él no está presente?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q20" value="-12"> Sí</label>
+          <label class="option"><input type="radio" name="q20" value="-5"> Hay indicios</label>
+          <label class="option"><input type="radio" name="q20" value="0"> No / no se observa</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Incompatibilidad" data-weight="10">
+        <p class="criterion-title">Desinterés</p>
+        <p class="question">¿Muestra desinterés constante hacia el participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q21" value="-10"> Sí</label>
+          <label class="option"><input type="radio" name="q21" value="-4"> A veces</label>
+          <label class="option"><input type="radio" name="q21" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="criterion" data-factor="Incompatibilidad" data-weight="8">
+        <p class="criterion-title">Entorno interpersonal problemático</p>
+        <p class="question">¿Las personas con las que se relaciona generan una incompatibilidad importante para el participante?</p>
+        <div class="options">
+          <label class="option"><input type="radio" name="q22" value="-8"> Sí</label>
+          <label class="option"><input type="radio" name="q22" value="-3"> Parcialmente</label>
+          <label class="option"><input type="radio" name="q22" value="0"> No</label>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <section class="card result">
+    <h2>Resultado</h2>
+    <div class="score-grid">
+      <div class="metric">
+        <span class="small">Compatibilidad</span>
+        <span class="value" id="score">0%</span>
+      </div>
+      <div class="metric">
+        <span class="small">Respuestas</span>
+        <span class="value" id="answered">0/22</span>
+      </div>
+      <div class="metric">
+        <span class="small">Estado</span>
+        <span class="value" id="status">Pendiente</span>
+      </div>
+    </div>
+
+    <div id="verdict" class="verdict mid">
+      Responde los criterios para obtener una lectura de compatibilidad.
+    </div>
+
+    <h3>Factores más influyentes</h3>
+    <div id="factors" class="factors">
+      <p class="small">Los factores aparecerán aquí después de responder.</p>
+    </div>
+
+    <div style="margin-top:20px">
+      <button type="button" onclick="evaluateTest()">Evaluar compatibilidad</button>
+      <button type="button" class="secondary" onclick="resetTest()">Reiniciar</button>
+    </div>
+
+    <p class="small" style="margin-top:16px">
+      El cálculo está construido a partir de las preferencias expresadas por el participante
+      en la entrevista. Los pesos son una operacionalización exploratoria y no constituyen
+      una escala psicométrica validada.
+    </p>
+  </section>
+</main>
+
+<script>
+  const criteria = [...document.querySelectorAll('.criterion')];
+
+  function evaluateTest() {
+    let answered = 0;
+    let positive = 0;
+    let maxPositive = 0;
+    let negative = 0;
+    const factorTotals = {};
+
+    criteria.forEach(c => {
+      const selected = c.querySelector('input:checked');
+      const factor = c.dataset.factor;
+      const weight = Number(c.dataset.weight);
+
+      if (!factorTotals[factor]) factorTotals[factor] = { score: 0, max: 0 };
+      if (weight > 0) factorTotals[factor].max += weight;
+
+      if (selected) {
+        answered++;
+        const value = Number(selected.value);
+        if (value > 0) {
+          positive += value;
+          maxPositive += weight;
+          factorTotals[factor].score += value;
+        } else if (value < 0) {
+          negative += Math.abs(value);
+          factorTotals[factor].score += value;
+        }
+      } else if (weight > 0) {
+        maxPositive += weight;
+      }
+    });
+
+    const raw = maxPositive > 0 ? ((positive - negative) / maxPositive) * 100 : 0;
+    const score = Math.max(0, Math.min(100, raw));
+
+    document.getElementById('score').textContent = Math.round(score) + '%';
+    document.getElementById('answered').textContent = answered + '/22';
+
+    const verdict = document.getElementById('verdict');
+    const status = document.getElementById('status');
+
+    if (answered < 22) {
+      status.textContent = 'Incompleto';
+      verdict.className = 'verdict mid';
+      verdict.textContent =
+        'La evaluación es provisional. Completa los 22 criterios para obtener una lectura final.';
+    } else if (score >= 75) {
+      status.textContent = 'Alta';
+      verdict.className = 'verdict good';
+      verdict.textContent =
+        'Alta compatibilidad según las preferencias declaradas. El perfil reúne una proporción importante de los factores que el participante considera atractivos.';
+    } else if (score >= 50) {
+      status.textContent = 'Intermedia';
+      verdict.className = 'verdict mid';
+      verdict.textContent =
+        'Compatibilidad intermedia. Existen coincidencias relevantes, pero también factores que podrían requerir atención o conocerse mejor.';
+    } else {
+      status.textContent = 'Baja';
+      verdict.className = 'verdict low';
+      verdict.textContent =
+        'Baja compatibilidad según este modelo de preferencias. El resultado refleja las respuestas introducidas y no determina por sí mismo la viabilidad de una relación.';
+    }
+
+    const factorEntries = Object.entries(factorTotals)
+      .map(([name, data]) => {
+        const normalized = data.max > 0
+          ? Math.max(0, Math.min(100, (data.score / data.max) * 100))
+          : Math.max(0, 100 - Math.min(100, data.score * -10));
+        return { name, score: normalized };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    const factors = document.getElementById('factors');
+    factors.innerHTML = '';
+
+    factorEntries.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'factor-row';
+      row.innerHTML = `
+        <strong>${item.name}</strong>
+        <div class="bar"><span style="width:${Math.round(item.score)}%"></span></div>
+        <span>${Math.round(item.score)}%</span>
+      `;
+      factors.appendChild(row);
+    });
+  }
+
+  function resetTest() {
+    document.getElementById('test').reset();
+    document.getElementById('score').textContent = '0%';
+    document.getElementById('answered').textContent = '0/22';
+    document.getElementById('status').textContent = 'Pendiente';
+
+    const verdict = document.getElementById('verdict');
+    verdict.className = 'verdict mid';
+    verdict.textContent = 'Responde los criterios para obtener una lectura de compatibilidad.';
+
+    document.getElementById('factors').innerHTML =
+      '<p class="small">Los factores aparecerán aquí después de responder.</p>';
+  }
+
+  document.querySelectorAll('#test input').forEach(input => {
+    input.addEventListener('change', evaluateTest);
+  });
+</script>
+
+</body>
+</html>
