@@ -51,7 +51,22 @@
     h2 { margin-top: 0; }
 
     main {
-      padding: 28px 20px 60px;
+      max-width: 1280px;
+      padding: 28px 28px 60px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    #test {
+      min-width: 0;
+    }
+
+    .results-column {
+      position: sticky;
+      top: 20px;
+      align-self: start;
     }
 
     .notice, .card {
@@ -139,12 +154,11 @@
     }
 
     .result {
-      position: sticky;
-      bottom: 14px;
-      z-index: 5;
-      background: rgba(255,255,255,.97);
+      position: static;
+      background: rgba(255,255,255,.98);
       border: 1px solid var(--line);
       box-shadow: 0 8px 30px rgba(20,30,40,.12);
+      margin-bottom: 0;
     }
 
     .score-grid {
@@ -227,10 +241,40 @@
       font-size: .87rem;
     }
 
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .results-column {
+        position: static;
+      }
+
+      .result {
+        margin-top: 0;
+      }
+    }
+
     @media (max-width: 680px) {
-      .options, .score-grid { grid-template-columns: 1fr; }
-      .factor-row { grid-template-columns: 130px 1fr 45px; }
-      .result { position: static; }
+      main {
+        padding: 20px 14px 40px;
+      }
+
+      .options, .score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .factor-row {
+        grid-template-columns: 125px 1fr 45px;
+      }
+
+      header {
+        padding: 34px 16px 30px;
+      }
+
+      .card {
+        padding: 18px;
+      }
     }
   </style>
 </head>
@@ -513,8 +557,11 @@
     </section>
   </form>
 
-  <section class="card result">
-    <h2>Resultado</h2>
+  </main>
+
+  <aside class="results-column">
+    <section class="card result">
+      <h2>Resultado</h2>
     <div class="score-grid">
       <div class="metric">
         <span class="small">Compatibilidad</span>
@@ -540,7 +587,7 @@
     </div>
 
     <div style="margin-top:20px">
-      <button type="button" onclick="evaluateTest()">Evaluar compatibilidad</button>
+      <button type="button" onclick="evaluateTest()">Actualizar resultado</button>
       <button type="button" class="secondary" onclick="resetTest()">Reiniciar</button>
     </div>
 
@@ -549,7 +596,8 @@
       en la entrevista. Los pesos son una operacionalización exploratoria y no constituyen
       una escala psicométrica validada.
     </p>
-  </section>
+    </section>
+  </aside>
 </main>
 
 <script>
@@ -595,11 +643,16 @@
     const verdict = document.getElementById('verdict');
     const status = document.getElementById('status');
 
-    if (answered < 22) {
-      status.textContent = 'Incompleto';
+    if (answered === 0) {
+      status.textContent = 'Pendiente';
       verdict.className = 'verdict mid';
       verdict.textContent =
-        'La evaluación es provisional. Completa los 22 criterios para obtener una lectura final.';
+        'Selecciona las respuestas de la persona evaluada. El panel se actualizará automáticamente.';
+    } else if (answered < 22) {
+      status.textContent = 'En curso';
+      verdict.className = 'verdict mid';
+      verdict.textContent =
+        'Resultado provisional. Sigue respondiendo para obtener la evaluación completa.';
     } else if (score >= 75) {
       status.textContent = 'Alta';
       verdict.className = 'verdict good';
